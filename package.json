@@ -1,0 +1,12 @@
+{
+  "name": "ai-os-vault-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "mcp:personal-google": "node scripts/personal_google_mcp.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.4.3"
+  }
+}

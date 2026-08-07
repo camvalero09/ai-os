@@ -1,0 +1,11 @@
+{
+  "google_account": "",
+  "onboarding_stage": 0,
+  "owner_name": "",
+  "primary_language": "en",
+  "remote_agent": "claude",
+  "remote_models": {},
+  "telegram_allowed_ids": [],
+  "timezone": "Europe/Berlin",
+  "vault_name": "My AI OS"
+}

@@ -1,0 +1,65 @@
+# Secrets. Nothing matching these may ever be committed.
+# Every credential this vault uses lands in one of these patterns.
+credentials/
+credentials.json
+*.json.key
+.env
+.env.*
+
+# Per-vault identity. Never shared between vaults.
+vault.config.json
+
+# Permissions granted on this machine by clicking "always allow". Machine-local
+# by nature, and not something to carry to another laptop unreviewed.
+.claude/settings.local.json
+
+# The shared system. It is its own repository, cloned into System/ and updated
+# from there, so this repository must not try to track a second copy of it.
+System/
+
+# macOS noise
+.DS_Store
+.DS_Store?
+._*
+
+# Obsidian per-machine state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# Build and run artefacts
+__pycache__/
+*.pyc
+node_modules/
+logs/*
+# ...except the trend record, which is the point of running maintenance at all.
+!logs/metrics.csv
+*.tmp
+*.log
+
+# Photos, recordings and video that arrive in the Inbox, usually sent from a
+# phone. A picture of a letter and a dictated voice note are among the most
+# personal things this vault ever holds, and git history is permanent: once
+# pushed, a file cannot be taken back out. They stay on this machine.
+#
+# The cost is real and deliberate. These are the one thing in the vault with no
+# backup, so a dead disk loses them. Anything worth keeping should be read,
+# written into a note, and the note is what survives.
+#
+# Documents are not covered on purpose: a PDF is usually a record worth backing
+# up. Add the extension here if that turns out to be wrong.
+Ideaverse/Inbox/*.oga
+Ideaverse/Inbox/*.ogg
+Ideaverse/Inbox/*.opus
+Ideaverse/Inbox/*.m4a
+Ideaverse/Inbox/*.mp3
+Ideaverse/Inbox/*.wav
+Ideaverse/Inbox/*.jpg
+Ideaverse/Inbox/*.jpeg
+Ideaverse/Inbox/*.png
+Ideaverse/Inbox/*.heic
+Ideaverse/Inbox/*.gif
+Ideaverse/Inbox/*.webp
+Ideaverse/Inbox/*.mp4
+Ideaverse/Inbox/*.mov
+Ideaverse/Inbox/*.webm

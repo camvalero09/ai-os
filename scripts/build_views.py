@@ -1,0 +1,514 @@
+#!/usr/bin/env python3
+"""
+Generates the derived views of the AI OS vault from note frontmatter.
+
+Frontmatter is the single source of truth (status, updated, summary, next).
+This script rewrites the content between marker pairs:
+
+    <!-- BEGIN GENERATED: view-name -->
+    ...replaced on every run, never edit by hand...
+    <!-- END GENERATED: view-name -->
+
+Hand-written content outside markers is never touched.
+
+Usage:
+    python3 scripts/build_views.py           # regenerate views in place
+    python3 scripts/build_views.py --check   # exit 1 if any view is out of date
+"""
+
+import os
+import re
+import sys
+from datetime import date
+from pathlib import Path
+
+# The system repository root. This script lives in it, so this is never a guess.
+# Standalone that is the repo itself; installed it is <vault>/System.
+SYSTEM = Path(__file__).resolve().parent.parent
+
+VAULT_MARKER = ".aios-vault"
+
+
+def _find_vault_root() -> Path:
+    """The folder holding this installation's own notes.
+
+    The system is shared and the content is not, so the two can sit in different
+    places and the scripts must not assume they are the same folder. Resolution
+    order: an explicit VAULT_ROOT wins; otherwise walk up from this script
+    looking for the marker file that every content vault carries; otherwise
+    assume the system repo is being run standalone and is its own vault.
+    """
+    override = os.environ.get("VAULT_ROOT")
+    if override:
+        return Path(override).expanduser().resolve()
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / VAULT_MARKER).exists():
+            return candidate
+    return SYSTEM
+
+
+VAULT = _find_vault_root()
+STALE_DAYS = 30
+ARCHIVE_DAYS = 60
+
+
+def parse_frontmatter(path: Path) -> dict:
+    text = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+    if not m:
+        return {}
+    fm = {}
+    for line in m.group(1).splitlines():
+        mm = re.match(r"^([A-Za-z_]+):\s*(.*)$", line)
+        if mm:
+            fm[mm.group(1)] = mm.group(2).strip().strip('"')
+    return fm
+
+
+def wikilink(rel_path_no_ext: str, display: str) -> str:
+    return f"[[{rel_path_no_ext}|{display}]]"
+
+
+def wikilink_table(rel_path_no_ext: str, display: str) -> str:
+    """Wikilink for use inside markdown tables: the pipe must be escaped
+    or Obsidian treats it as a column separator and drops the graph edge."""
+    return f"[[{rel_path_no_ext}\\|{display}]]"
+
+
+def parse_date(value: str):
+    try:
+        return date.fromisoformat(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def days_since(value: str):
+    d = parse_date(value)
+    return (date.today() - d).days if d else None
+
+
+# ---------- data collection ----------
+
+def collect_efforts():
+    efforts = []
+    for d in sorted((VAULT / "Ideaverse/Efforts").iterdir()):
+        if not d.is_dir():
+            continue
+        main = d / f"{d.name}.md"
+        if not main.exists():
+            continue
+        fm = parse_frontmatter(main)
+        fm["_name"] = d.name
+        fm["_dir"] = d.name
+        fm["_link"] = wikilink_table(f"Ideaverse/Efforts/{d.name}/{d.name}", d.name)
+        efforts.append(fm)
+    return efforts
+
+
+def collect_atlas():
+    notes = []
+    for p in sorted((VAULT / "Ideaverse/Atlas").rglob("*.md")):
+        if p.name == "Atlas Index.md":
+            continue
+        fm = parse_frontmatter(p)
+        rel = p.relative_to(VAULT).with_suffix("")
+        fm["_link"] = wikilink_table(str(rel), p.stem)
+        notes.append(fm)
+    return notes
+
+
+def collect_sources():
+    sources = []
+    for p in sorted((VAULT / "Ideaverse/Sources").glob("*.md")):
+        if p.name == "Sources Index.md":
+            continue
+        fm = parse_frontmatter(p)
+        rel = p.relative_to(VAULT).with_suffix("")
+        fm["_link"] = wikilink_table(str(rel), p.stem)
+        sources.append(fm)
+    return sources
+
+
+def collect_outputs():
+    """Every finished piece of work, wherever it lives.
+
+    Outputs sit inside the project that produced them, so that a project folder
+    holds its own artifacts rather than pointing at a shared pile. A flat folder
+    had no relationship to the work it came from: three verdicts written on one
+    day sat unlinked and the next session did not know they existed.
+
+    The top-level folder still exists for work belonging to no project, and both
+    are collected here so this index stays the single place to answer "what has
+    been produced".
+    """
+    outputs = []
+    roots = [(VAULT / "Ideaverse/Outputs", None)]
+    efforts_dir = VAULT / "Ideaverse/Efforts"
+    if efforts_dir.is_dir():
+        for d in sorted(efforts_dir.iterdir()):
+            if (d / "Outputs").is_dir():
+                roots.append((d / "Outputs", d.name))
+
+    for base, effort in roots:
+      for p in sorted(base.rglob("*")):
+        if p.is_dir() or p.name == "Outputs Index.md" or p.name.startswith("."):
+            continue
+        parts = p.relative_to(base).parts
+        sub = parts[0] if len(parts) > 1 else ""
+        entry = {"_name": p.name,
+                 "_project": effort or (sub or ""),
+                 "_group": sub if effort else "",
+                 "_effort": effort or ""}
+        m = re.match(r"^(\d{4}-\d{2}(?:-\d{2})?)", p.name)
+        entry["_date"] = m.group(1) if m else ""
+        if p.suffix == ".md":
+            fm = parse_frontmatter(p)
+            rel = p.relative_to(VAULT).with_suffix("")
+            entry["_cell"] = wikilink_table(str(rel), p.stem)
+            entry["_purpose"] = fm.get("summary", "")
+        else:
+            entry["_cell"] = f"`{p.name}`"
+            entry["_purpose"] = ""
+        outputs.append(entry)
+    return outputs
+
+
+# ---------- view renderers ----------
+
+def render_efforts_tables() -> str:
+    efforts = collect_efforts()
+    active, stalled, closed = [], [], []
+    for e in efforts:
+        status = e.get("status", "unknown")
+        if status in ("closed", "archived"):
+            closed.append(e)
+        elif status == "active":
+            age = days_since(e.get("updated"))
+            (stalled if age is not None and age > STALE_DAYS else active).append(e)
+        else:
+            active.append(e)
+
+    lines = ["## Active", ""]
+    lines += ["| Effort | Next action | Blocked on | Open questions | Last updated |",
+              "|---|---|---|---|---|"]
+    for e in active:
+        d = VAULT / "Ideaverse/Efforts" / e["_dir"] if e.get("_dir") else None
+        q = open_question_count(d) if d else 0
+        lines.append(f"| {e['_link']} | {e.get('next', '')} | {e.get('blocked_on', '') or '-'} "
+                     f"| {q or '-'} | {e.get('updated', '')} |")
+    lines += ["", f"## Stalled (no movement in {STALE_DAYS}+ days)", ""]
+    if stalled:
+        lines += ["| Effort | Goal (one line) | Next action | Last updated |", "|---|---|---|---|"]
+        for e in stalled:
+            lines.append(f"| {e['_link']} | {e.get('summary', '')} | {e.get('next', '')} | {e.get('updated', '')} |")
+        lines += ["", f"Stalled efforts move to `Ideaverse/Archive/` after {ARCHIVE_DAYS} days without movement."]
+    else:
+        lines.append("*None.*")
+    lines += ["", "## Closed or archived", ""]
+    if closed:
+        lines += ["| Effort | Outcome | Status | Last updated |", "|---|---|---|---|"]
+        for e in closed:
+            lines.append(f"| {e['_link']} | {e.get('summary', '')} | {e.get('status', '')} | {e.get('updated', '')} |")
+    else:
+        lines.append("*None yet.*")
+    return "\n".join(lines)
+
+
+
+OPEN_ROW = re.compile(r"^\|([^|]+)\|([^|]*)\|([^|]*)\|(.*)\|\s*$")
+
+
+def open_question_count(effort_dir) -> int:
+    """How many questions this project is still carrying.
+
+    Read from the Open questions table in the project note rather than a
+    frontmatter field, so the number cannot disagree with the table it counts.
+    A question is open until its row says otherwise.
+    """
+    note = effort_dir / f"{effort_dir.name}.md"
+    if not note.exists():
+        return 0
+    body = note.read_text(encoding="utf-8")
+    if "## Open questions" not in body:
+        return 0
+    section = body.split("## Open questions", 1)[1].split("\n---", 1)[0]
+    n = 0
+    for line in section.splitlines():
+        m = OPEN_ROW.match(line.strip())
+        if not m or m.group(1).strip().lower().startswith(("question", "---")):
+            continue
+        if "open" in m.group(3).lower() and "closed" not in m.group(3).lower():
+            n += 1
+    return n
+
+
+def render_active_context_efforts() -> str:
+    efforts = collect_efforts()
+    # One line per project, which is the view actually wanted when asking
+    # "where is everything". Not one line per open question: ten questions from
+    # one project, opened at different stages and unrelated to each other, is
+    # noise rather than a status.
+    lines = ["| Project | Status | Next action | Blocked on | Open questions |",
+             "|---|---|---|---|---|"]
+    for e in efforts:
+        if e.get("status") == "archived":
+            continue
+        status = e.get("status", "unknown")
+        age = days_since(e.get("updated"))
+        if status == "active" and age is not None and age > STALE_DAYS:
+            status = f"active (stale {age}d)"
+        d = VAULT / "Ideaverse/Efforts" / e["_dir"] if e.get("_dir") else None
+        q = open_question_count(d) if d else 0
+        lines.append(f"| {e['_link']} | {status} | {e.get('next', '')} "
+                     f"| {e.get('blocked_on', '') or '-'} | {q or '-'} |")
+    return "\n".join(lines)
+
+
+def render_atlas_notes() -> str:
+    lines = ["| Note | Domain | Summary | Updated |", "|---|---|---|---|"]
+    for n in collect_atlas():
+        lines.append(f"| {n['_link']} | {n.get('domain', '')} | {n.get('summary', '')} | {n.get('updated', '')} |")
+    return "\n".join(lines)
+
+
+def render_sources_table() -> str:
+    lines = ["| File | Status | Summary | Processed into |", "|---|---|---|---|"]
+    for s in collect_sources():
+        processed = " · ".join(
+            wikilink_table(p.strip(), p.strip().split("/")[-1])
+            for p in s.get("processed_into", "").split(";") if p.strip()
+        )
+        lines.append(f"| {s['_link']} | {s.get('status', '')} | {s.get('summary', '')} | {processed} |")
+    return "\n".join(lines)
+
+
+def render_outputs_table() -> str:
+    outputs = collect_outputs()
+    if not outputs:
+        return "*No outputs yet.*"
+    groups = {}
+    for o in outputs:
+        groups.setdefault(o["_project"], []).append(o)
+    # projects first (alphabetical), work belonging to none last
+    order = sorted(groups, key=lambda k: (k == "", k.lower()))
+    blocks = []
+    for project in order:
+        label = project if project else "Belongs to no project"
+        rows = ["| File | Date | What it is |", "|---|---|---|"]
+        for o in sorted(groups[project], key=lambda x: x["_date"], reverse=True):
+            rows.append(f"| {o['_cell']} | {o['_date']} | {o['_purpose']} |")
+        blocks.append(f"### {label}\n\n" + "\n".join(rows))
+    return "\n\n".join(blocks)
+
+
+def collect_skills(subdir):
+    """Every skill note the agent can reach, from both layers.
+
+    A vault has two skill trees. `System/Skills/` comes from the shared system
+    repository and is identical in every installation. `Skills/` at the vault
+    root holds skills belonging to this person alone and is never shared. Both
+    are usable; only the first travels.
+    """
+    skills = []
+    for layer, base in (("system", SYSTEM / subdir), ("personal", VAULT / subdir)):
+        if not base.is_dir():
+            continue
+        for p in sorted(base.rglob("*.md")):
+            fm = parse_frontmatter(p)
+            rel = p.relative_to(VAULT).with_suffix("")
+            fm["_link"] = wikilink_table(str(rel), p.stem)
+            fm["_rel_md"] = str(p.relative_to(VAULT))
+            fm["_title"] = p.stem
+            fm["_layer"] = layer
+            skills.append(fm)
+    return skills
+
+
+def _skill_rows(skills):
+    lines = ["| Skill | Use when | Auto-loads in Claude Code |", "|---|---|---|"]
+    for s in skills:
+        auto = "yes" if s.get("expose") == "claude_code" else ""
+        lines.append(f"| {s['_link']} | {s.get('summary', '')} | {auto} |")
+    return lines
+
+
+def _render_skill_map(subdir: str) -> str:
+    skills = collect_skills(subdir)
+    system = [s for s in skills if s["_layer"] == "system"]
+    personal = [s for s in skills if s["_layer"] == "personal"]
+    lines = _skill_rows(system)
+    if personal:
+        lines += ["", "### Your own, not part of the shared system", ""]
+        lines += _skill_rows(personal)
+    return "\n".join(lines)
+
+
+def render_skill_map_workflows() -> str:
+    return _render_skill_map("Skills/Workflows")
+
+
+def render_skill_map_tools() -> str:
+    return _render_skill_map("Skills/Tools")
+
+
+LOADER_MARK = "generated by scripts/build_views.py"
+
+
+def render_loader(fm) -> str:
+    name = fm.get("id", "")
+    desc = fm.get("summary", "").rstrip(".")
+    triggers = fm.get("triggers", "")
+    description = f"{desc}. Use PROACTIVELY when the task involves: {triggers}."
+    description = '"' + description.replace('"', '\\"') + '"'
+    return f"""---
+name: {name}
+description: {description}
+---
+
+# {fm['_title']} (loader)
+
+<!-- {LOADER_MARK} from "{fm['_rel_md']}"; edit that note, not this file -->
+
+**Read and apply `{fm['_rel_md']}`** (relative to the vault root). Do not proceed with the task until you have read it. That note is the canonical version; this loader only routes to it.
+
+This skill stacks with Me.md and Active Context; on conflict, Me.md wins.
+"""
+
+
+def generate_loaders(check: bool):
+    """Write .claude/skills/<id>/SKILL.md for every note with expose: claude_code."""
+    changed = []
+    skills_dir = VAULT / ".claude/skills"
+    exposed = [s for s in collect_skills("Skills/Workflows") + collect_skills("Skills/Tools")
+               if s.get("expose") == "claude_code" and s.get("id")]
+    wanted = {s["id"] for s in exposed}
+    for s in exposed:
+        target = skills_dir / s["id"] / "SKILL.md"
+        content = render_loader(s)
+        if not target.exists() or target.read_text(encoding="utf-8") != content:
+            changed.append(str(target.relative_to(VAULT)))
+            if not check:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(content, encoding="utf-8")
+    if skills_dir.exists():
+        for d in skills_dir.iterdir():
+            skill_md = d / "SKILL.md"
+            if d.is_dir() and d.name not in wanted and skill_md.exists() \
+                    and LOADER_MARK in skill_md.read_text(encoding="utf-8"):
+                changed.append(f"{d.relative_to(VAULT)} (remove: no longer exposed)")
+                if not check:
+                    skill_md.unlink()
+                    d.rmdir()
+    return changed
+
+
+def render_calendar_notes() -> str:
+    notes = [p for p in sorted((VAULT / "Ideaverse/Calendar").glob("*.md"), reverse=True)
+             if p.name != "Calendar.md"]
+    if not notes:
+        return "*No calendar notes yet.*"
+    lines = []
+    for p in notes:
+        rel = p.relative_to(VAULT).with_suffix("")
+        lines.append(f"- {wikilink(str(rel), p.stem)}")
+    return "\n".join(lines)
+
+
+
+def render_effort_outputs(effort_name: str):
+    """The outputs this one project produced, listed inside the project itself.
+
+    A finished analysis that nothing links to is invisible: three council
+    verdicts written on 2026-08-04 sat unread for two days because the project
+    note did not know they existed. This table is the mechanical half of the
+    fix. The other half cannot be generated: an output that concludes something
+    has to have its conclusion written into the project note by whoever produced
+    it, in the same session.
+    """
+    def render() -> str:
+        base = VAULT / "Ideaverse/Efforts" / effort_name / "Outputs"
+        rows = []
+        for f in sorted(base.rglob("*"), reverse=True):
+            if f.is_dir() or f.name.startswith("."):
+                continue
+            m = re.match(r"^(\d{4}-\d{2}(?:-\d{2})?)", f.name)
+            date = m.group(1) if m else ""
+            if f.suffix == ".md":
+                rel = f.relative_to(VAULT).with_suffix("")
+                cell = wikilink_table(str(rel), f.stem)
+                purpose = parse_frontmatter(f).get("summary", "")
+            else:
+                cell, purpose = f"`{f.name}`", ""
+            rows.append(f"| {cell} | {date} | {purpose} |")
+        if not rows:
+            return "*Nothing produced yet.*"
+        return "\n".join(["| Output | Date | What it is |", "|---|---|---|"] + rows)
+    return render
+
+
+def _effort_output_views() -> dict:
+    """One generated block per project that has outputs, keyed by its note."""
+    views = {}
+    efforts = VAULT / "Ideaverse/Efforts"
+    if not efforts.is_dir():
+        return views
+    for d in sorted(efforts.iterdir()):
+        if not (d.is_dir() and (d / "Outputs").is_dir()):
+            continue
+        note = f"Ideaverse/Efforts/{d.name}/{d.name}.md"
+        if (VAULT / note).exists():
+            views[note] = {"effort-outputs": render_effort_outputs(d.name)}
+    return views
+
+
+VIEWS = {
+    "Ideaverse/Efforts/Efforts Index.md": {"efforts-tables": render_efforts_tables},
+    "Maps & Manuals/Active Context.md": {"active-efforts": render_active_context_efforts},
+    "Ideaverse/Atlas/Atlas Index.md": {"atlas-notes": render_atlas_notes},
+    "Ideaverse/Sources/Sources Index.md": {"sources-table": render_sources_table},
+    "Ideaverse/Outputs/Outputs Index.md": {"outputs-table": render_outputs_table},
+    "Ideaverse/Calendar/Calendar.md": {"calendar-notes": render_calendar_notes},
+    "Maps & Manuals/Skill Map.md": {
+        "skill-map-workflows": render_skill_map_workflows,
+        "skill-map-tools": render_skill_map_tools,
+    },
+}
+
+VIEWS.update(_effort_output_views())
+
+
+def apply_views(check: bool) -> int:
+    changed = []
+    for rel, views in VIEWS.items():
+        path = VAULT / rel
+        text = path.read_text(encoding="utf-8")
+        new_text = text
+        for name, renderer in views.items():
+            pattern = re.compile(
+                rf"(<!-- BEGIN GENERATED: {name} -->)(.*?)(<!-- END GENERATED: {name} -->)",
+                re.DOTALL,
+            )
+            if not pattern.search(new_text):
+                print(f"ERROR: markers for view '{name}' not found in {rel}")
+                return 2
+            body = renderer()
+            new_text = pattern.sub(lambda m: f"{m.group(1)}\n{body}\n{m.group(3)}", new_text)
+        if new_text != text:
+            changed.append(rel)
+            if not check:
+                path.write_text(new_text, encoding="utf-8")
+    changed += generate_loaders(check)
+    if check and changed:
+        print("Views out of date (run: python3 scripts/build_views.py):")
+        for c in changed:
+            print(f"  {c}")
+        return 1
+    for c in changed:
+        print(f"regenerated: {c}")
+    if not changed:
+        print("all views up to date")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(apply_views(check="--check" in sys.argv))

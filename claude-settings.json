@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 System/scripts/vault_lint.py)",
+      "Bash(python3 System/scripts/build_views.py)",
+      "Bash(python3 System/scripts/build_views.py --check)",
+      "Bash(./System/scripts/weekly_maintenance.sh)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push)",
+      "Bash(git push origin main)",
+      "Bash(git -C System fetch *)",
+      "Bash(git -C System status)",
+      "Bash(git -C System status *)",
+      "Bash(git -C System log *)",
+      "Bash(git -C System describe *)",
+      "Bash(git -C System tag)",
+      "Bash(git -C System tag *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/System/scripts/check_destructive.py\"",
+            "statusMessage": "Checking for destructive commands..."
+          }
+        ]
+      }
+    ]
+  }
+}

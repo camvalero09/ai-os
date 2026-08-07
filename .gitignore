@@ -1,0 +1,34 @@
+# Secrets. Nothing matching these may ever be committed.
+# Every credential this vault uses lands in one of these patterns.
+credentials.json
+credentials/
+*.json.key
+.env
+.env.*
+
+# Per-vault identity. Never shared between vaults.
+vault.config.json
+
+# Permissions granted on this machine by clicking "always allow". Machine-local
+# by nature, and not something to carry to another laptop unreviewed.
+.claude/settings.local.json
+
+# macOS noise
+.DS_Store
+.DS_Store?
+._*
+
+# Obsidian per-machine state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# Build and run artefacts
+__pycache__/
+*.pyc
+node_modules/
+logs/*
+# ...except the trend record, which is the point of running maintenance at all.
+!logs/metrics.csv
+*.tmp
+*.log

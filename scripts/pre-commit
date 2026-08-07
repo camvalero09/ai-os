@@ -1,0 +1,30 @@
+#!/bin/sh
+# Pre-commit hook for the vault.
+# The git root IS the vault root, so this works whatever the folder is named.
+# The lint script lives in the shared system, which is installed at System/ in a
+# vault but sits at the root when the system repository is worked on directly.
+# Both are checked, so one hook serves both.
+# Installed via: python3 System/scripts/install_hook.py
+# Blocks the commit if vault lint fails (includes generated-view sync check).
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+if [ -f "System/scripts/vault_lint.py" ]; then
+    lint="System/scripts/vault_lint.py"
+    build="System/scripts/build_views.py"
+elif [ -f "scripts/vault_lint.py" ]; then
+    lint="scripts/vault_lint.py"
+    build="scripts/build_views.py"
+else
+    echo "Cannot find vault_lint.py. Is the system installed at System/?"
+    exit 1
+fi
+
+python3 "$lint"
+status=$?
+if [ $status -ne 0 ]; then
+    echo ""
+    echo "Commit blocked by vault lint. Fix the issues above."
+    echo "If views are out of date: python3 $build && git add -A"
+    exit $status
+fi
