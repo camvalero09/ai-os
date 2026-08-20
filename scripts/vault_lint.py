@@ -313,8 +313,26 @@ def check_append_only_files(files):
         # stripped keeps the check on the words while allowing link repair.
         def bare(line):
             return re.sub(r"\[\[[^\]]*\]\]", "[[]]", line)
-        now = {bare(ln) for ln in f.read_text(encoding="utf-8").splitlines()}
-        lost = [ln for ln in before.splitlines()
+
+        def body(text):
+            """The log itself, without the settings block at the top.
+
+            That block is a settings block, not history: `updated:` is supposed
+            to change every time the file is touched, and the old value is
+            genuinely gone afterwards. Counting it as a lost line blocked a
+            commit on 2026-08-20 that had removed no row at all, which is worse
+            than not checking, because the person hitting it cannot tell a real
+            falsified history from this.
+            """
+            lines = text.splitlines()
+            if lines and lines[0].strip() == "---":
+                for i in range(1, len(lines)):
+                    if lines[i].strip() == "---":
+                        return lines[i + 1:]
+            return lines
+
+        now = {bare(ln) for ln in body(f.read_text(encoding="utf-8"))}
+        lost = [ln for ln in body(before)
                 if ln.strip() and bare(ln) not in now]
         if lost:
             problems.append(f"  {rel}: {len(lost)} line(s) removed")
