@@ -10,6 +10,24 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.1 (2026-08-20)
+
+**Fixed**
+
+- **Saving could be refused for a history that had lost nothing.** The check that protects your project logs counted the date at the top of the file as a deleted line, so simply touching a log could block the save, and the message claimed a line had been removed when none had. It now ignores the settings block and still refuses any save that really does drop a row. This also restores rollback: v2.0 was the first version here and had nothing behind it to go back to.
+
+---
+
+## v2.0 (2026-08-07)
+
+**Changed**
+
+- **The system is public.** [github.com/camvalero09/ai-os](https://github.com/camvalero09/ai-os). Anyone can install it with one command, no account and no invitation.
+- **Published as a new repository rather than by opening the old one.** The files were clean; the years of saved changes behind them were not, carrying the author's name, personal email, home network names, bank, employer and folder paths. Opening the old repository would have made all of that permanent and public, so today's files were published as a single fresh start instead. Nothing secret had ever been saved into it, which was checked first and was the one thing that could not have been undone.
+- **Everything below this line happened in the private repository.** The entries are kept because they explain why things work the way they do. The saved changes behind them are not here.
+
+---
+
 ## v1.53 (2026-08-07)
 
 **Fixed**
