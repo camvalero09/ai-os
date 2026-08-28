@@ -357,6 +357,77 @@ def check_append_only_files(files):
     return problems
 
 
+LOG_ENTRY_WORD_CAP = 120
+
+
+def check_new_log_entries_length(files):
+    """A new Agent Log Section 1 entry must fit the cap the log itself sets.
+
+    The cap was written into the log's own format block on 2026-08-03 and
+    enforced by nothing. On 2026-08-29, 46 of 60 entries were over it, including
+    one written that day by the agent adding this check, and including the entry
+    that introduced the cap. Prose said it for 26 days and nothing changed.
+
+    Blocking, and only on entries this commit adds: the fix is to trim a
+    paragraph you just wrote, which is seconds of work and entirely yours. Old
+    entries are left alone on purpose, since rewriting them would falsify a
+    record that was accurate when written.
+    """
+    log = [f for f in files if f.name == "Agent Log.md"]
+    if not log:
+        return []
+    f = log[0]
+    rel = f.relative_to(VAULT).as_posix()
+
+    def section_one_entries(text):
+        if "## Section 1" not in text:
+            return {}
+        s1 = text[text.index("## Section 1"):]
+        if "## Section 2" in s1:
+            s1 = s1[:s1.index("## Section 2")]
+        out = {}
+        for block in re.split(r"(?m)^### ", s1)[1:]:
+            out[block.split("\n")[0].strip()] = len(block.split())
+        return out
+
+    before = section_one_entries(_git(VAULT, "show", f"HEAD:{rel}"))
+    now = section_one_entries(f.read_text(encoding="utf-8"))
+    problems = []
+    for title, words in now.items():
+        if title in before or words <= LOG_ENTRY_WORD_CAP:
+            continue
+        problems.append(f"  {rel}: new entry is {words} words, cap is "
+                        f"{LOG_ENTRY_WORD_CAP}")
+        problems.append(f"      {title[:80]}")
+    if problems:
+        problems.append("      Trim **Why**. It is the field that inflates, and "
+                        "the reasoning belongs in Rule Origins or the changelog.")
+    return problems
+
+
+def warn_tags_without_changelog():
+    """Warn when a released version has no entry saying what it changed.
+
+    The changelog is what the update notice shows an adopter deciding whether to
+    accept a version, so a tag without one ships a decision nobody can make. Six
+    versions shipped that way before 2026-08-05, and v2.12 to v2.14 did it again
+    on 2026-08-28, found only because someone went looking.
+    """
+    repo = SYSTEM if (SYSTEM / "CHANGELOG.md").is_file() else None
+    if repo is None:
+        return []
+    text = (repo / "CHANGELOG.md").read_text(encoding="utf-8")
+    tags = [t for t in _git(repo, "tag", "-l").splitlines() if t.strip()]
+    missing = [t for t in tags if f"## {t} " not in text and f"## {t}\n" not in text]
+    if not missing:
+        return []
+    shown = ", ".join(sorted(missing)[:6])
+    more = f" and {len(missing) - 6} more" if len(missing) > 6 else ""
+    return [f"{len(missing)} released version(s) have no changelog entry: "
+            f"{shown}{more}. The update notice shows that file to whoever is "
+            f"deciding whether to install."]
+
+
 def warn_stale_questions(files):
     """A question that has sat open for a month is not being worked on.
 
@@ -911,10 +982,15 @@ def main():
              "from the effort or hub it belongs to.",
              check_orphans(files)),
             ("A record of what happened lost a line",
-             "Project logs and the Agent Log only ever grow. Add a new line correcting "
-             "an old one; never edit or delete it. A rewritten history reads as true, "
-             "which is what makes it worse than a missing one.",
+             "Project logs and Agent Log Section 1 only ever grow. Add a new line "
+             "correcting an old one; never edit or delete it. A rewritten history "
+             "reads as true, which is what makes it worse than a missing one. "
+             "Section 2 is the exception: its entries are cleared once promoted.",
              check_append_only_files(files)),
+            ("A new Agent Log entry is over the cap the log sets for itself",
+             "The log caps Section 1 entries at 120 words. Trim the new entry; the "
+             "old ones stay as written.",
+             check_new_log_entries_length(files)),
             ("There is an instruction file that should not be here",
              "Agents load these as rules automatically, wherever they sit, without "
              "telling you. Only CLAUDE.md and AGENTS.md at the top of the vault are "
@@ -943,7 +1019,8 @@ def main():
                 + warn_system_state() + warn_stale_efforts()
                 + warn_expired_content(files) + warn_effort_names_in_skills(files)
                 + warn_skill_list_budget()
-                + warn_entry_file_budget())
+                + warn_entry_file_budget()
+                + warn_tags_without_changelog())
     if warnings:
         print("Worth a look, but nothing is blocked:")
         for line in warnings:

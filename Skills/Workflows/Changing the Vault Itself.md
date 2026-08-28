@@ -22,7 +22,9 @@ A structural change is any edit to `Maps & Manuals/`, YAML conventions, folder s
 
 ## After
 
-Add an entry to [[Maps & Manuals/Agent Log|Agent Log]] Section 1: what changed, why, and what to watch for. Update `Last updated:` on any `Maps & Manuals` file you touched.
+Add an entry to [[Maps & Manuals/Agent Log|Agent Log]] Section 1: what changed, why, and what to watch for. Keep it under 120 words; the lint blocks a new entry over that. Update `Last updated:` on any `Maps & Manuals` file you touched.
+
+**Test the installed copy, never the one you edited.** Import or run from the vault path, not the authoring clone. A test that loads the code you just changed passes while the running version stays broken.
 
 ## One home, generated adapters
 

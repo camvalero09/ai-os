@@ -10,6 +10,27 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.2 (2026-08-20)
+
+**Fixed**
+
+- **Wrote the missing entries for v2.0 and v2.1.** The changelog had stopped at v1.53 while two versions shipped. It is the file you read before accepting an update, so a gap in it is worse than a gap anywhere else. This entry was itself missing until 2026-08-29, which is how the check that finds such gaps came to exist.
+
+---
+
+## v2.20 (2026-08-29)
+
+**Added**
+
+- **The Agent Log's own 120-word cap is now enforced on new entries.** The cap was written into the log on 2026-08-03 and checked by nothing; by 2026-08-29, 46 of its 60 entries were over it, including the entry that introduced the cap. Only entries a commit adds are checked, and older ones are left exactly as written, because rewriting them would falsify a record that was accurate at the time.
+- **A warning when a released version has no changelog entry.** Six versions shipped without one before 2026-08-05, and three more on 2026-08-28. It found v2.2 missing on its first run.
+
+**Changed**
+
+- **The guide for changing the vault now says to test the installed copy, not the one you just edited.** On 2026-08-07 a fix was announced twice while the vault kept running the old version, because the test imported the code from the folder being edited. A test that cannot fail is not a test.
+
+---
+
 ## v2.19 (2026-08-29)
 
 **Fixed**
