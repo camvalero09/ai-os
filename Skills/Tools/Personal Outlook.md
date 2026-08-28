@@ -4,7 +4,7 @@ type: tool
 status: active
 domain: ai_os
 updated: 2026-07-20
-summary: "Read the user's personal Outlook/Hotmail mailbox through a vault-owned Microsoft Graph integration. Read-only: search, list, read messages, download attachments. No send, delete, or write."
+summary: "Read-only access to the user's personal Outlook mailbox: search, read, download attachments."
 triggers: "outlook, hotmail, my old email account, search my outlook, check my other mailbox"
 expose: true
 ---

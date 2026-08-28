@@ -4,7 +4,7 @@ type: tool
 status: stable
 domain: ai_os
 updated: 2026-06-18
-summary: "Template and guide for writing new vault skill notes so they follow the same structure, trigger clearly, and are usable by any agent."
+summary: "Write a new skill note so it triggers correctly and stays within the startup budget."
 triggers: "add a skill, create a skill note, document how to use a tool, teach agents how to do X"
 expose: true
 ---

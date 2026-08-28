@@ -4,7 +4,7 @@ type: tool
 status: stable
 domain: ai_os
 updated: 2026-08-28
-summary: "What is different when the vault is a clone rather than the machine it lives on, so absent tools are not reported as broken."
+summary: "What differs when the vault is a clone, so absent tools are not reported as broken."
 triggers: "System folder missing, skills all dead links, credentials missing, working from phone or browser, cloned repo, personal-google unavailable"
 expose: true
 ---

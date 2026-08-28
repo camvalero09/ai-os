@@ -4,7 +4,7 @@ type: workflow
 status: draft
 domain: ai_os
 updated: 2026-08-05
-summary: "Thinking with the user where the output is deliberately nothing: no note, no file, no next action. The only workflow here that is allowed to end with nothing saved."
+summary: "Thinking with the user where nothing is saved: no note, no file, no next action."
 triggers: "think out loud, think with me, half-formed, bounce something, no notes, just thinking, rough idea"
 expose: true
 ---

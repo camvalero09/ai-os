@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-06-18
 summary: "How to create, edit, and read .docx Word documents using docx-js (new files) or python-docx (editing existing files)."
 triggers: "Word doc, report, letter, memo, CV, contract, template, .docx"
-expose: true
+expose: false
 ---
 
 # Create Word Document (.docx)

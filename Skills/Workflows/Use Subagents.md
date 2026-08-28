@@ -4,7 +4,7 @@ type: workflow
 status: stable
 domain: ai_os
 updated: 2026-06-18
-summary: "Protocol for deciding when and how to spawn subagents: decision criteria, briefing template, and patterns for parallel and sequential work."
+summary: "When to spawn a subagent, how to brief it, and patterns for parallel work."
 triggers: "large input, many files, parallel subtasks, verify my own output, fresh eyes, review this work"
 expose: true
 ---

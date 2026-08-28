@@ -4,7 +4,7 @@ type: workflow
 status: stable
 domain: ai_os
 updated: 2026-08-28
-summary: "The protocol for changing how the vault works, and where agent-specific files may live."
+summary: "Protocol for changing how the vault works, and where agent-specific files may live."
 triggers: "edit Maps and Manuals, change a convention, new workflow, rename folders, bulk edit across notes, add support for another agent, YAML standard"
 expose: true
 ---

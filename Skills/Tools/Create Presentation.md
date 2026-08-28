@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-06-18
 summary: "How to create and edit .pptx presentations using pptxgenjs (new files) or python-pptx (editing existing), with visual QA via image conversion."
 triggers: "slides, deck, presentation, pitch deck, .pptx"
-expose: true
+expose: false
 ---
 
 # Create Presentation (.pptx)

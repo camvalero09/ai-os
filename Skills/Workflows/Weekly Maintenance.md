@@ -4,7 +4,7 @@ type: workflow
 status: stable
 domain: ai_os
 updated: 2026-08-06
-summary: "Agent-run weekly upkeep: lint, regenerate views, flag stale efforts, draft the weekly review with decision-forcing questions, commit. The human reviews the draft; the machine does the bookkeeping."
+summary: "Weekly upkeep: lint, regenerate views, flag stale efforts, draft the review, commit."
 triggers: "weekly maintenance, weekly review, vault upkeep, run maintenance"
 expose: true
 effort_refs: intentional  # provenance: points at the effort that recorded why automation was removed

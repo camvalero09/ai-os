@@ -4,7 +4,7 @@ type: workflow
 status: stable
 domain: startup
 updated: 2026-08-04
-summary: "Convene a five-persona adversarial council on an idea, then deliver one GO, RESHAPE or KILL verdict with the cheapest test that de-risks it."
+summary: "Five-persona adversarial council on an idea, ending in one GO, RESHAPE or KILL verdict and the cheapest test."
 triggers: "roast this, pressure-test this, convene the council, brutal second opinion, tear this apart, before I build this"
 expose: true
 ---

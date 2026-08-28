@@ -4,7 +4,7 @@ type: tool
 status: active
 domain: ai_os
 updated: 2026-08-04
-summary: "Update the shared system inside a vault to a newer version, or roll back to an older one, without the user ever touching git or resolving a conflict."
+summary: "Update the shared system to a newer version, or roll back, without touching git."
 triggers: "update the system, check for updates, new version, am I up to date, roll back, undo the update, what changed"
 expose: true
 ---

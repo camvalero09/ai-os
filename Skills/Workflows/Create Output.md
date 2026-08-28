@@ -4,7 +4,7 @@ type: workflow
 status: stable
 domain: ai_os
 updated: 2026-08-28
-summary: "Produce a finished file rather than pasting content into chat, with the right destination, naming and quality checks."
+summary: "Produce a finished file rather than chat text: destination, naming, quality checks."
 triggers: "create a document, write a report, make a deck, build a spreadsheet, draft a letter, produce a deliverable, save this as a file"
 expose: true
 ---
