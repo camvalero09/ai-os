@@ -426,6 +426,34 @@ def warn_skill_list_budget():
             f"`summary:` fields in Skills/."]
 
 
+# Anthropic, on the file agents load automatically: "Target under 200 lines per
+# CLAUDE.md file. Longer files consume more context and reduce adherence." It is
+# the only published size number for an entry file; OpenAI gives none.
+ENTRY_FILE_BUDGET_LINES = 200
+ENTRY_FILE_WARN_AT = 0.80
+
+
+def warn_entry_file_budget():
+    """Warn before the always-loaded rules file grows back.
+
+    Every rule added to it will have a good reason, which is exactly why it
+    grows. On 2026-08-29 it was cut from 132 lines to 114 by deleting a wrapper
+    that restated the rules it wrapped; without something watching, that returns.
+    """
+    entry = VAULT / "CLAUDE.md"
+    if not entry.is_file():
+        return []
+    lines = entry.read_text(encoding="utf-8").count("\n")
+    if lines < ENTRY_FILE_BUDGET_LINES * ENTRY_FILE_WARN_AT:
+        return []
+    pct = 100 * lines / ENTRY_FILE_BUDGET_LINES
+    verdict = "over" if lines > ENTRY_FILE_BUDGET_LINES else "close to"
+    return [f"CLAUDE.md is {lines} lines, {pct:.0f}% of the 200 Anthropic "
+            f"targets ({verdict} it). Past it, adherence drops. The card in "
+            f"Maps & Manuals/Me.md is the only thing in there: shorten it, or "
+            f"move a section that has become a procedure into a skill."]
+
+
 def check_views_in_sync():
     result = subprocess.run(
         [sys.executable, str(SYSTEM / "scripts/build_views.py"), "--check"],
@@ -898,7 +926,8 @@ def main():
                 + warn_stale_questions(files)
                 + warn_system_state() + warn_stale_efforts()
                 + warn_expired_content(files) + warn_effort_names_in_skills(files)
-                + warn_skill_list_budget())
+                + warn_skill_list_budget()
+                + warn_entry_file_budget())
     if warnings:
         print("Worth a look, but nothing is blocked:")
         for line in warnings:

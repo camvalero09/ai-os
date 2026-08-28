@@ -10,6 +10,18 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.17 (2026-08-29)
+
+**Added**
+
+- **The vault now warns when the always-loaded rules file starts growing back.** Anthropic targets under 200 lines for it and says that past that, agents follow it less. The check warns from 160 lines and never blocks saving, because a check that stops work gets switched off. Currently 114.
+
+**Fixed**
+
+- **The changelog was missing v2.12, v2.13 and v2.14.** Written now from what those versions actually changed.
+
+---
+
 ## v2.16 (2026-08-29)
 
 **Changed**
@@ -33,6 +45,31 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 **Fixed**
 
 - **The compliance check was measuring an obsolete rule.** It asked whether a session read both the rules file and Active Context. Since v2.9 the rules arrive automatically, so reading the rules file is no longer required and counting it understated compliance. It now reports Active Context, which is the file that still depends on the agent choosing to open it.
+
+---
+
+## v2.14 (2026-08-28)
+
+**Changed**
+
+- **The four document builders no longer announce themselves at startup.** Create PDF, Create Presentation, Create Spreadsheet and Create Word Document mostly described things the model already knows how to do. The one part specific to this vault, where a finished file goes and how it is named, is in Create Output, which stays. They remain reachable through the Skill Map.
+- **Fifteen skill descriptions rewritten to say what the skill does and stop.**
+
+---
+
+## v2.13 (2026-08-28)
+
+**Changed**
+
+- **The guide for writing a new skill now carries Anthropic's own rules for it.** State what to do rather than narrating why, add only what the model cannot work out for itself, keep the instructions under 500 lines, and treat the summary and trigger lines as the expensive part, because those are loaded into every session under a hard cap. It also now says plainly that making a skill load automatically is a cost decision, not a compliment.
+
+---
+
+## v2.12 (2026-08-28)
+
+**Fixed**
+
+- **The list of skills every agent loads had reached 98% of its limit, and a third of the excess was one repeated phrase.** Every skill's description began with the same 38-character preamble, 1,014 characters in total across the list. Shortened it and trimmed the ten longest trigger lists. Past the limit some skills are simply never offered, and nothing tells you which.
 
 ---
 
