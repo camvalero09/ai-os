@@ -331,8 +331,24 @@ def check_append_only_files(files):
                         return lines[i + 1:]
             return lines
 
-        now = {bare(ln) for ln in body(f.read_text(encoding="utf-8"))}
-        lost = [ln for ln in body(before)
+        def protected_region(text):
+            """The part of the file that may never lose a line.
+
+            The Agent Log has two halves and only the first is history. Section
+            2 holds candidate rules that Weekly Maintenance is supposed to
+            delete once they are promoted or turn 90 days old, so protecting it
+            stops the loop it belongs to: on 2026-08-29 it held 20 entries
+            proposing a rule and had promoted none.
+            """
+            lines = body(text)
+            if f.name == "Agent Log.md":
+                for i, ln in enumerate(lines):
+                    if ln.startswith("## Section 2"):
+                        return lines[:i]
+            return lines
+
+        now = {bare(ln) for ln in protected_region(f.read_text(encoding="utf-8"))}
+        lost = [ln for ln in protected_region(before)
                 if ln.strip() and bare(ln) not in now]
         if lost:
             problems.append(f"  {rel}: {len(lost)} line(s) removed")

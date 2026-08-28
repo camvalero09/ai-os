@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.19 (2026-08-29)
+
+**Fixed**
+
+- **The protection on the Agent Log covered the half that is meant to be cleared.** The log has two sections: the first records what changed and may never lose a line, the second collects mistakes as candidates for new rules, and those are supposed to be deleted once the rule is adopted or once 90 days pass. The check protected both, so no lesson could ever graduate. On 2026-08-29 that half held 20 entries proposing a rule and had produced none. Section 1 is still protected exactly as before.
+
+---
+
 ## v2.18 (2026-08-29)
 
 **Fixed**
