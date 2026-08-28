@@ -6,7 +6,7 @@ domain: startup
 updated: 2026-08-02
 summary: "Adversarial startup diagnostic: six forcing questions, premise challenge, alternatives, one assignment."
 triggers: "office hours, is this worth building, pressure test this idea, should I build this, forcing questions"
-expose: true
+expose: false
 ---
 
 # Workflow: Office Hours

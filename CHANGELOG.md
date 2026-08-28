@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.16 (2026-08-29)
+
+**Changed**
+
+- **Four workflows no longer announce themselves at startup.** Office Hours, Onboard, Start a Tracker and Think Out Loud have been offered in every session since 2026-08-07 and no session has ever reached one, measured with the counter added in v2.15. They still exist and still work; they are now found through the Skill Map, like the document builders and the Delivery Hero workflows. The startup list every agent loads gets about 900 characters shorter. If you find yourself asking for one of these by name and the agent does not know it, that is the cost, and setting `expose: true` on the note reverses it.
+
+---
+
 ## v2.15 (2026-08-29)
 
 **Changed**

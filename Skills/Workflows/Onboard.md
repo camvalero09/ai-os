@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-04
 summary: "First-run setup for a new vault: identity, tools, first effort, and a check that the machinery works."
 triggers: "onboard, set up my vault, first time, new vault, get me started"
-expose: true
+expose: false
 ---
 
 # Workflow: Onboard

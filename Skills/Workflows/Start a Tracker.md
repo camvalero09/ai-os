@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-04
 summary: "Set up a running register: fixed columns, one row per thing, a closed status vocabulary."
 triggers: "track my clients, who owes me, a register, a log of, invoices, applications, subscriptions, deadlines, tracker"
-expose: true
+expose: false
 ---
 
 # Workflow: Start a Tracker
