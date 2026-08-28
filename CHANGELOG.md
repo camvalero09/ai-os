@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.5 (2026-08-28)
+
+**Fixed**
+
+- **The handover report invented a project called "Efforts Index" and asked you to fix it.** It treated the generated index file sitting in the projects folder as though it were a project of its own, then reported two things missing from it that can never be there. Cosmetic, but it put a permanent unfixable task in front of every agent closing a session. Third and last fix to the script released earlier today.
+
+---
+
 ## v2.4 (2026-08-28)
 
 **Fixed**

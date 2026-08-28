@@ -93,9 +93,15 @@ def changed_paths() -> list[tuple[str, str]]:
 
 
 def effort_of(path: str) -> str | None:
-    """The effort folder a changed file belongs to, if any."""
+    """The effort folder a changed file belongs to, if any.
+
+    Needs four components, not three: Ideaverse/Efforts/<folder>/<file>. With
+    three, the third part is a file sitting directly in Efforts/ (the generated
+    Efforts Index), and treating it as a folder invents an effort with no
+    frontmatter and reports two TODOs against it that can never be satisfied.
+    """
     parts = Path(path).parts
-    if len(parts) >= 3 and parts[0] == "Ideaverse" and parts[1] == "Efforts":
+    if len(parts) >= 4 and parts[0] == "Ideaverse" and parts[1] == "Efforts":
         return f"{parts[0]}/{parts[1]}/{parts[2]}"
     return None
 
@@ -159,7 +165,9 @@ def main() -> int:
 
     substantive = [p for p in paths if not is_generated(p)]
     generated = [p for p in paths if is_generated(p)]
-    efforts = sorted({e for p in paths if (e := effort_of(p))})
+    efforts = sorted(
+        {e for p in paths if not is_generated(p) and (e := effort_of(p))}
+    )
 
     out: list[str] = []
     add = out.append
