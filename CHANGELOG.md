@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.11 (2026-08-28)
+
+**Changed**
+
+- **Rules that only matter sometimes are now skills, so they arrive when they apply instead of on every task.** Handling secrets, changing the vault's own structure, creating a finished file, using subagents, and working from a clone were all sitting in the rules file, loaded into every session whether or not the task went anywhere near them. They are now five skills that load when relevant. This follows both Anthropic's and OpenAI's published guidance: a procedure belongs in a skill, a fact belongs in the always-loaded file.
+
+---
+
 ## v2.10 (2026-08-28)
 
 **Changed**

@@ -3,8 +3,10 @@ id: workflow-create-output
 type: workflow
 status: stable
 domain: ai_os
-updated: 2026-05-28
-summary: "Produce a finished deliverable in Ideaverse/Outputs with the right format and tone."
+updated: 2026-08-28
+summary: "Produce a finished file rather than pasting content into chat, with the right destination, naming and quality checks."
+triggers: "create a document, write a report, make a deck, build a spreadsheet, draft a letter, produce a deliverable, save this as a file"
+expose: true
 ---
 
 # Workflow: Create Output
@@ -52,3 +54,25 @@ Create a subfolder only when there are multiple outputs of the same type. Otherw
 ## Related
 
 [[Maps & Manuals/Skill Map|Skill Map]] | [[Maps & Manuals/Me|Me]]
+
+---
+
+## When a task would produce a file, create the file
+
+Do not output the content to chat. Read the relevant skill note first: it carries rules that prevent common errors.
+
+- Save to `Ideaverse/Outputs/` unless Camilo specifies a path, or to the effort's own `Outputs/` folder when it belongs to a project.
+- Name it `YYYY-MM-DD - [Title].[ext]`.
+- Give it a real `summary:` in the settings block. That field is what agents read to decide whether to open it.
+- Confirm the path afterwards with a one-line summary of what was produced.
+
+**Presentations:** convert to images and inspect before declaring done. Use a subagent for fresh eyes.
+**Spreadsheets:** zero formula errors before delivery. Verify with a formula check.
+
+## What not to do to the vault
+
+- Do not create files or folders that were not requested, or duplicate a note that exists.
+- Do not overwrite any file without first saying what will change.
+- Do not delete raw sources.
+- Reference a document or transaction by its exact file, date and identifier. Camilo keeps several versions of most things.
+- Updating rows in shared data: match every identifying field, never one. A receipt number can legitimately span several rows.
