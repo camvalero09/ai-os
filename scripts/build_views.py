@@ -431,6 +431,75 @@ def generate_loaders(check: bool):
     return changed
 
 
+ENTRY_FILES = ("CLAUDE.md", "AGENTS.md")
+CARD_RE = re.compile(r"<!-- BEGIN CARD -->\n(.*?)<!-- END CARD -->", re.DOTALL)
+
+
+def generate_entry_files(check: bool):
+    """Write CLAUDE.md and AGENTS.md from the card section of Me.md.
+
+    Agents load their entry file automatically; they read Me.md only if they
+    decide to. Measured on 2026-08-28, 56% of real sessions made that decision
+    and 25 to 32% of short ones did, so rules that lived only in Me.md were
+    absent from the sessions most likely to need them.
+
+    The card stays in Me.md, which keeps one home for the content and keeps a
+    vendor's filename out of it. These two files are adapters: delete them,
+    regenerate, and nothing is lost.
+    """
+    me = VAULT / "Maps & Manuals/Me.md"
+    if not me.exists():
+        return []
+    m = CARD_RE.search(me.read_text(encoding="utf-8"))
+    if not m:
+        # No card section means this vault has not adopted generated entry
+        # files. Say nothing and touch nothing: a hand-written CLAUDE.md is
+        # somebody's own work and overwriting it would be the worst possible
+        # way to deliver an update.
+        return []
+    card = m.group(1).strip()
+    n_skills = len([s for s in collect_skills("Skills/Workflows") + collect_skills("Skills/Tools")
+                    if s.get("id")])
+
+    changed = []
+    for name in ENTRY_FILES:
+        other = [o for o in ENTRY_FILES if o != name][0]
+        body = f"""# {name}
+
+<!-- {LOADER_MARK} from "Maps & Manuals/Me.md"; edit the card in that note, not this file -->
+
+Entry point for AI agents working in this vault. Your agent loads this file on
+its own, so the rules below arrive without anyone deciding to read them. They
+are generated from the card in `Maps & Manuals/Me.md`, which is where they live
+and where they get changed. Keep this file identical in content to `{other}`;
+regenerating both is what does that.
+
+## The rules
+
+{card}
+
+## Where the rest is
+
+- **`Maps & Manuals/Active Context.md`** — current priorities, active efforts, open decisions, and task routing. Read it before starting work: it is the part that changes every week.
+- **`Maps & Manuals/Skill Map.md`** — {n_skills} tested workflows and tools. Most load on their own; look here before inventing an approach. That this list exists is the one thing you cannot work out from the folders.
+- **`Maps & Manuals/Vault Map.md`** — folder structure. Read before creating or moving files.
+- **`Maps & Manuals/Me.md`** — why each rule above exists, plus the rules that only apply sometimes: secrets, subagents, changing the vault's own structure, and what to do if the `System/` folder is missing.
+- **`Maps & Manuals/Agent Log.md`** — what has gone wrong before. Scan it for the area you are about to work in.
+
+## Before you start
+
+Run `git status`. If it shows changes neither you nor Camilo made this session, another session is probably live: say so before touching anything.
+
+Conventions the vault checks and agents still break: wikilinks carry the full vault-relative path, never a bare `[[Note Name]]`; every Atlas and Effort note needs its settings block; no em dashes in anything Camilo reads.
+"""
+        target = VAULT / name
+        if not target.exists() or target.read_text(encoding="utf-8") != body:
+            changed.append(name)
+            if not check:
+                target.write_text(body, encoding="utf-8")
+    return changed
+
+
 def render_calendar_notes() -> str:
     notes = [p for p in sorted((VAULT / "Ideaverse/Calendar").glob("*.md"), reverse=True)
              if p.name != "Calendar.md"]
@@ -527,6 +596,7 @@ def apply_views(check: bool) -> int:
             if not check:
                 path.write_text(new_text, encoding="utf-8")
     changed += generate_loaders(check)
+    changed += generate_entry_files(check)
     if check and changed:
         print("Views out of date (run: python3 scripts/build_views.py):")
         for c in changed:

@@ -10,6 +10,17 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.9 (2026-08-28)
+
+**Added**
+
+- **Your rules can now reach every session instead of only the ones that chose to read them.** Your `CLAUDE.md` and `AGENTS.md` told agents to go and read your rules file. Measurement across 149 real sessions on the author's machine found they did that 56% of the time, and only a quarter to a third of the time in short sessions, which are exactly the ones where a quick unconsidered action is most likely. Agents load the entry file on their own, so the rules that matter every time now live in it. They are still written in one place, a section of your own `Me.md` marked as the card, and both entry files are generated from it. Nothing about a rule lives in a file named after a vendor.
+- **The skill count in the entry file is now counted, not typed.** It said 36 for months while the real number had moved.
+
+**This does nothing unless you opt in.** If your `Me.md` has no card section, your `CLAUDE.md` and `AGENTS.md` are left exactly as you wrote them and nothing is reported. To adopt it, wrap the rules you want every session to see in `<!-- BEGIN CARD -->` and `<!-- END CARD -->` inside `Me.md`, then run the usual update commands. Ask your agent to do it for you if you would rather not edit by hand.
+
+---
+
 ## v2.8 (2026-08-28)
 
 **Fixed**
