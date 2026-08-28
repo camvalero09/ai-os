@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-02
 summary: "Work through a decision: options, tradeoffs, reversibility, next step."
 triggers: "work through a decision, compare options, tradeoffs, what should I do"
-expose: claude_code
+expose: true
 ---
 
 # Workflow: Decide

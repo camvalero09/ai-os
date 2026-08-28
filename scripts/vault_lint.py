@@ -392,6 +392,39 @@ def check_status_vocabulary(files):
     return issues
 
 
+# Both Anthropic and OpenAI publish the same floor for the skill list an agent
+# holds in context at startup: 2% of the context window, or 8,000 characters
+# when the window is unknown. Only the name and description of each skill count
+# toward it; the body loads later, when a skill is actually chosen. The number
+# is a vendor constant, so it lives here with its source rather than inline.
+#   https://learn.chatgpt.com/docs/build-skills
+#   https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
+SKILL_LIST_BUDGET_CHARS = 8000
+SKILL_LIST_WARN_AT = 0.80
+
+
+def check_skill_list_budget():
+    """Warn before the skill list outgrows what agents load at startup.
+
+    Over the budget, an agent may not see every skill, and the ones it misses
+    fail silently: nothing reports a skill that was never offered.
+    """
+    skills_dir = VAULT / ".claude/skills"
+    if not skills_dir.is_dir():
+        return []
+    total = 0
+    for skill_md in sorted(skills_dir.glob("*/SKILL.md")):
+        fm = parse_frontmatter(skill_md)
+        total += len(fm.get("name", "")) + len(fm.get("description", ""))
+    if total < SKILL_LIST_BUDGET_CHARS * SKILL_LIST_WARN_AT:
+        return []
+    pct = 100 * total / SKILL_LIST_BUDGET_CHARS
+    verdict = "over" if total > SKILL_LIST_BUDGET_CHARS else "close to"
+    return [f"  Skill names and descriptions total {total:,} characters, "
+            f"{verdict} the {SKILL_LIST_BUDGET_CHARS:,} agents load at startup ({pct:.0f}%). "
+            f"Shorten the longest `summary:` fields in Skills/."]
+
+
 def check_views_in_sync():
     result = subprocess.run(
         [sys.executable, str(SYSTEM / "scripts/build_views.py"), "--check"],
@@ -790,6 +823,11 @@ def main():
 
     # (plain name, what to do about it, issues)
     checks = [
+        ("The skill list is outgrowing what agents load",
+         "Agents hold every skill's name and description in context from the start and "
+         "choose from that list. Past the limit some skills are simply never offered, and "
+         "nothing reports the ones that were missed.",
+         check_skill_list_budget()),
         ("A link is written the short way",
          "Links need the full path, like [[Maps & Manuals/Me|Me]]. Written short, "
          "Obsidian cannot follow them and the note goes missing from the graph.",

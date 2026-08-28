@@ -10,6 +10,16 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.7 (2026-08-28)
+
+**Changed**
+
+- **Your skills now reach every agent, not just Claude.** Skills were only ever published where Claude Code looks for them. Codex, which reads a different folder, saw none of them and had to find workflows by reading the skill map by hand every time. In this vault's own measurements Codex ran four out of five sessions. Skills are now published to every agent's folder from the same source note, so both find them the same way and load one only when it is relevant.
+- **Skill notes no longer name a vendor.** A note used to say `expose: claude_code`, putting one company's product name inside your own writing. It now says `expose: true`, and which agents receive it is a setting in the generator instead. Older notes saying `claude_code` keep working, so nothing breaks if you have not updated yours. Supporting a new agent is now a single line in one file and no change to any note.
+- **A warning before the skill list gets too long.** Agents keep every skill's name and description in mind from the start and pick from that list, and both Anthropic and OpenAI cap it at the same size. Past that cap some skills are simply never offered, and nothing tells you which ones were missed. The vault check now warns at 80% of the limit. This vault is at 84%, so three of the longest descriptions were shortened.
+
+---
+
 ## v2.6 (2026-08-28)
 
 **Added**

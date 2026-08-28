@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-04
 summary: "First-run setup for a new vault: fill in Me.md through conversation, configure identity, connect tools, create the first real effort, and verify the machinery works."
 triggers: "onboard, set up my vault, first time, new vault, get me started, /onboard"
-expose: claude_code
+expose: true
 ---
 
 # Workflow: Onboard

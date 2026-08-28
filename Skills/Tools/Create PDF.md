@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-06-18
 summary: "How to create, read, merge, split, and manipulate PDF files using pypdf, pdfplumber, and reportlab."
 triggers: "PDF: create, merge, split, extract, watermark, OCR"
-expose: claude_code
+expose: true
 ---
 
 # Create / Process PDF

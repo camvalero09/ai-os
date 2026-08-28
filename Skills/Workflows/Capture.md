@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-05-28
 summary: "Save raw thoughts, links, transcripts, and dumps into the vault inbox or sources."
 triggers: "save this, capture, new source, transcript, article, link dump"
-expose: claude_code
+expose: true
 ---
 
 # Workflow: Capture

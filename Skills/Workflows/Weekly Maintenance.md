@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-06
 summary: "Agent-run weekly upkeep: lint, regenerate views, flag stale efforts, draft the weekly review with decision-forcing questions, commit. The human reviews the draft; the machine does the bookkeeping."
 triggers: "weekly maintenance, weekly review, vault upkeep, run maintenance, /weekly-maintenance"
-expose: claude_code
+expose: true
 effort_refs: intentional  # provenance: points at the effort that recorded why automation was removed
 ---
 

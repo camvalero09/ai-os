@@ -6,7 +6,7 @@ domain: startup
 updated: 2026-08-02
 summary: "Run an adversarial startup diagnostic on an idea: goal, stage, six forcing questions, premise challenge, alternatives, then one assignment."
 triggers: "office hours, is this worth building, pressure test this idea, run the questions on me, startup session, should I build this, forcing questions"
-expose: claude_code
+expose: true
 ---
 
 # Workflow: Office Hours

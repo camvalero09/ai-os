@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-04
 summary: "Set up a running register of things that change over time: clients and invoices, applications, subscriptions, contacts, deadlines. Fixed columns, one row per thing, a closed status vocabulary."
 triggers: "track my clients, keep track of, a list of, who owes me, register, log of, spreadsheet, invoices, applications, subscriptions, deadlines, tracker"
-expose: claude_code
+expose: true
 ---
 
 # Workflow: Start a Tracker

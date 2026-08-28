@@ -4,9 +4,9 @@ type: tool
 status: active
 domain: ai_os
 updated: 2026-08-05
-summary: "Use the user's vault-owned personal Google integration to manage Gmail and Calendar and read files from their personal Drive without depending on an agent-specific connector."
+summary: "Vault-owned Gmail, Calendar and Drive access for the personal Google account, independent of any agent-specific connector."
 triggers: "personal Gmail, personal email, draft from my email, organize inbox, Gmail labels, download attachment, personal Google Drive, find my Drive file, personal calendar, schedule meeting, create calendar event"
-expose: claude_code
+expose: true
 ---
 
 # Personal Google

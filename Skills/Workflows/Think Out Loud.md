@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-08-05
 summary: "Thinking with the user where the output is deliberately nothing: no note, no file, no next action. The only workflow here that is allowed to end with nothing saved."
 triggers: "think out loud, think with me, half-formed, not sure yet, bounce something, no notes, just thinking, kick something around, rough idea"
-expose: claude_code
+expose: true
 ---
 
 # Workflow: Think Out Loud

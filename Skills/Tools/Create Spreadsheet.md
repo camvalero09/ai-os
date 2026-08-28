@@ -6,7 +6,7 @@ domain: ai_os
 updated: 2026-06-18
 summary: "How to create, edit, and analyze .xlsx spreadsheets using openpyxl (formulas and formatting) and pandas (data analysis and bulk operations)."
 triggers: "spreadsheet, Excel, budget, tracker, financial model, .xlsx"
-expose: claude_code
+expose: true
 ---
 
 # Create Spreadsheet (.xlsx)

@@ -4,9 +4,9 @@ type: workflow
 status: stable
 domain: ai_os
 updated: 2026-07-07
-summary: "Fable 5's working discipline written down by Fable 5: a five-gate loop (scope, evidence, adversarial reasoning, verification, calibrated report) plus standing habits, so any model runs hard tasks with the same process."
+summary: "A five-gate loop, scope, evidence, adversarial reasoning, verification, calibrated report, plus standing habits, so any model runs hard tasks with the same discipline."
 triggers: "hard multi-step tasks, dependent unknowns, debugging where the first theory might be wrong, work needing verification before handoff, tasks that keep failing; the user says Fable mode, think like Fable, slow down and do this right, think this through first"
-expose: claude_code
+expose: true
 ---
 
 # Fable Mode
