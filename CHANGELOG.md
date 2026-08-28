@@ -10,6 +10,24 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.15 (2026-08-29)
+
+**Changed**
+
+- **The entry file is now nothing but the rules.** `CLAUDE.md` and `AGENTS.md` used to wrap the rules in a preamble explaining that they were generated, an index of the other Maps & Manuals files, and a "before you start" section. All of it either repeated the rules or had drifted out of date against them, and every session paid for it. Removed: 1,801 characters, about a fifth of the file.
+- **Links in the generated entry files are now plain file paths.** `[[Ideaverse/Efforts/Personal Finance/Personal Finance|Personal Finance]]` names the same note twice and an agent cannot open it. It now reads `Ideaverse/Efforts/Personal Finance/Personal Finance.md`. The rules file itself keeps proper wikilinks, so Obsidian is unaffected.
+- **"Active efforts" no longer lists finished ones.** Only archived efforts were being hidden, so closed ones sat in a table whose title said they were active.
+
+**Added**
+
+- **A way to see which skills sessions actually use.** `python3 System/scripts/entry_compliance.py --skills` counts, per skill, how many real sessions reached it, across both Claude and Codex. It reads what the tools themselves record, so an agent cannot flatter it. Three filters keep it honest: sessions that wrote a skill note are building it, not using it; a session opening the same note eight or more times is looping on it; and one command naming three or more skill notes is an inventory sweep. Without those, the first run reported a skill as the third most used when 272 of its 284 reads were the six sessions that wrote it.
+
+**Fixed**
+
+- **The compliance check was measuring an obsolete rule.** It asked whether a session read both the rules file and Active Context. Since v2.9 the rules arrive automatically, so reading the rules file is no longer required and counting it understated compliance. It now reports Active Context, which is the file that still depends on the agent choosing to open it.
+
+---
+
 ## v2.11 (2026-08-28)
 
 **Changed**

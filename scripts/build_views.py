@@ -271,7 +271,10 @@ def render_active_context_efforts() -> str:
     lines = ["| Project | Status | Next action | Blocked on | Open questions |",
              "|---|---|---|---|---|"]
     for e in efforts:
-        if e.get("status") == "archived":
+        # A section called "Active efforts" that lists finished ones is a lie
+        # the reader has to check every time. Closed work is in the Efforts
+        # Index, which is what that index is for.
+        if e.get("status") in ("archived", "closed"):
             continue
         status = e.get("status", "unknown")
         age = days_since(e.get("updated"))
@@ -452,6 +455,7 @@ def generate_loaders(check: bool):
 
 
 ENTRY_FILES = ("CLAUDE.md", "AGENTS.md")
+WIKILINK_RE = re.compile(r"\[\[([^\]|\\]+)(?:\\?\|[^\]]*)?\]\]")
 CARD_RE = re.compile(r"<!-- BEGIN CARD -->\n(.*?)<!-- END CARD -->", re.DOTALL)
 
 
@@ -478,39 +482,25 @@ def generate_entry_files(check: bool):
         # way to deliver an update.
         return []
     card = m.group(1).strip()
-    n_skills = len([s for s in collect_skills("Skills/Workflows") + collect_skills("Skills/Tools")
-                    if s.get("id")])
+    # Wikilinks are for Obsidian, which reads Me.md. An agent reads the entry
+    # file and opens things by path, so the [[a/b\|b]] form spends characters
+    # naming the same note twice and gives the agent nothing it can use.
+    card = WIKILINK_RE.sub(lambda w: w.group(1).strip() + ".md", card)
 
     changed = []
     for name in ENTRY_FILES:
         other = [o for o in ENTRY_FILES if o != name][0]
+        # Nothing but the card. Every section that used to wrap it -- a preamble
+        # explaining the generation, an index of the other Maps & Manuals files,
+        # a "before you start" -- was either restating the card or had gone
+        # stale against it, and it was loaded in every session either way.
         body = f"""# {name}
 
 <!-- {LOADER_MARK} from "Maps & Manuals/Me.md"; edit the card in that note, not this file -->
 
-Entry point for AI agents working in this vault. Your agent loads this file on
-its own, so the rules below arrive without anyone deciding to read them. They
-are generated from the card in `Maps & Manuals/Me.md`, which is where they live
-and where they get changed. Keep this file identical in content to `{other}`;
-regenerating both is what does that.
-
-## The rules
+Entry point for agents working in this vault. Identical in content to `{other}`.
 
 {card}
-
-## Where the rest is
-
-- **`Maps & Manuals/Active Context.md`** — current priorities, active efforts, open decisions, and task routing. Read it before starting work: it is the part that changes every week.
-- **`Maps & Manuals/Skill Map.md`** — {n_skills} tested workflows and tools. Most load on their own; look here before inventing an approach. That this list exists is the one thing you cannot work out from the folders.
-- **`Maps & Manuals/Vault Map.md`** — folder structure. Read before creating or moving files.
-- **`Maps & Manuals/Me.md`** — why each rule above exists, plus the rules that only apply sometimes: secrets, subagents, changing the vault's own structure, and what to do if the `System/` folder is missing.
-- **`Maps & Manuals/Agent Log.md`** — what has gone wrong before. Scan it for the area you are about to work in.
-
-## Before you start
-
-Run `git status`. If it shows changes neither you nor Camilo made this session, another session is probably live: say so before touching anything.
-
-Conventions the vault checks and agents still break: wikilinks carry the full vault-relative path, never a bare `[[Note Name]]`; every Atlas and Effort note needs its settings block; no em dashes in anything Camilo reads.
 """
         target = VAULT / name
         if not target.exists() or target.read_text(encoding="utf-8") != body:
