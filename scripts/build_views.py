@@ -400,7 +400,7 @@ def render_loader(fm) -> str:
     name = fm.get("id", "")
     desc = fm.get("summary", "").rstrip(".")
     triggers = fm.get("triggers", "")
-    description = f"{desc}. Use PROACTIVELY when the task involves: {triggers}."
+    description = f"{desc}. Use when: {triggers}."
     description = '"' + description.replace('"', '\\"') + '"'
     return f"""---
 name: {name}

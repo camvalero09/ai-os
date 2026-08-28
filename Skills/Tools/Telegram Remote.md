@@ -5,7 +5,7 @@ status: draft
 domain: ai_os
 updated: 2026-08-07
 summary: "Talk to the vault from a phone over Telegram, with the full agent behind it rather than a fixed menu. Requires the laptop awake and an allowlist of exactly the owner's Telegram ID."
-triggers: "telegram, from my phone, on the go, remote, message the vault, phone line, away from the laptop"
+triggers: "telegram, from my phone, on the go, remote, message the vault, away from the laptop"
 expose: true
 ---
 

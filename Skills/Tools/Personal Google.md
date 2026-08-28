@@ -5,7 +5,7 @@ status: active
 domain: ai_os
 updated: 2026-08-05
 summary: "Vault-owned Gmail, Calendar and Drive access for the personal Google account, independent of any agent-specific connector."
-triggers: "personal Gmail, personal email, draft from my email, organize inbox, Gmail labels, download attachment, personal Google Drive, find my Drive file, personal calendar, schedule meeting, create calendar event"
+triggers: "personal Gmail, draft from my email, organize inbox, download attachment, personal Drive, personal calendar, schedule meeting"
 expose: true
 ---
 
