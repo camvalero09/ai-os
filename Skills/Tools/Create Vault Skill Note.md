@@ -135,3 +135,19 @@ After writing the skill note, run `python3 System/scripts/build_views.py`: the S
 ## Related
 
 [[Maps & Manuals/Me|Me]] (Proactive file creation) | [[Maps & Manuals/Skill Map|Skill Map]] | [[System/Skills/Data Models/YAML Metadata Standard|YAML Metadata Standard]] | [[System/Skills/Tools/Vault Lint|Vault Lint]]
+
+---
+
+## Write it short
+
+State what to do, not how or why. Reasoning belongs in the Agent Log, not in the skill.
+
+Add only what an agent could not work out from the files. Cut any sentence explaining something the model already knows.
+
+Keep the body well under 500 lines. Split into files in the same folder when it grows, and link them one level deep from the skill note.
+
+**`summary:` and `triggers:` are the expensive fields.** They are injected into every session for every exposed skill, and the combined listing is capped at 2% of the context window or 8,000 characters. Past the cap some skills are never offered and nothing says which. Write them in third person, name what the skill does and when it applies, and stop.
+
+**Set `expose: true` only if the skill should trigger on its own.** An unexposed skill costs nothing at startup and is still reachable through Skill Map.
+
+Source: [Anthropic skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
