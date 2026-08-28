@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.18 (2026-08-29)
+
+**Fixed**
+
+- **The commit check told you to do the one thing the rules forbid.** When it blocked a commit for out-of-date generated tables, its own advice ended with `git add -A`, which stages everything in the folder including whatever a parallel session has half-finished. That is the exact mistake that put one session's work inside another's commit on 2026-08-01 and again on 2026-08-20. It now says to stage only the files the rebuild reports.
+
+---
+
 ## v2.17 (2026-08-29)
 
 **Added**
