@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.8 (2026-08-28)
+
+**Fixed**
+
+- **v2.7 blocked saving over a warning, and flagged its own generated files as unlinked notes.** Publishing skills to a second folder made the vault check count those generated pointer files as real notes nobody links to, 21 of them, and the new skill-list notice was filed as a problem rather than a note to yourself, so an 80% reading stopped every save. Both fixed: generated skill folders are ignored the way they always were for Claude's, and the size notice now sits under "worth a look" where it belongs.
+
+---
+
 ## v2.7 (2026-08-28)
 
 **Changed**

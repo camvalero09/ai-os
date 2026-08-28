@@ -403,7 +403,7 @@ SKILL_LIST_BUDGET_CHARS = 8000
 SKILL_LIST_WARN_AT = 0.80
 
 
-def check_skill_list_budget():
+def warn_skill_list_budget():
     """Warn before the skill list outgrows what agents load at startup.
 
     Over the budget, an agent may not see every skill, and the ones it misses
@@ -420,9 +420,10 @@ def check_skill_list_budget():
         return []
     pct = 100 * total / SKILL_LIST_BUDGET_CHARS
     verdict = "over" if total > SKILL_LIST_BUDGET_CHARS else "close to"
-    return [f"  Skill names and descriptions total {total:,} characters, "
-            f"{verdict} the {SKILL_LIST_BUDGET_CHARS:,} agents load at startup ({pct:.0f}%). "
-            f"Shorten the longest `summary:` fields in Skills/."]
+    return [f"Skill list is {pct:.0f}% of what agents load at startup "
+            f"({total:,} of {SKILL_LIST_BUDGET_CHARS:,} characters, {verdict} the limit). "
+            f"Past it, some skills are never offered. Shorten the longest "
+            f"`summary:` fields in Skills/."]
 
 
 def check_views_in_sync():
@@ -784,7 +785,8 @@ def check_orphans(files):
     for n in sorted(noext - inbound):
         # Private/ is deliberately unreachable: nothing may link to it, or agents
         # would follow the link and turn one session's observation into vault canon.
-        if n.startswith((".claude/", "Ideaverse/Archive/", "Ideaverse/Inbox/", "Private/")) or n.split("/")[-1] in skip_names:
+        if n.startswith((".claude/", ".agents/", "Ideaverse/Archive/",
+                         "Ideaverse/Inbox/", "Private/")) or n.split("/")[-1] in skip_names:
             continue
         warnings.append(f"  {n}")
     return warnings
@@ -823,11 +825,6 @@ def main():
 
     # (plain name, what to do about it, issues)
     checks = [
-        ("The skill list is outgrowing what agents load",
-         "Agents hold every skill's name and description in context from the start and "
-         "choose from that list. Past the limit some skills are simply never offered, and "
-         "nothing reports the ones that were missed.",
-         check_skill_list_budget()),
         ("A link is written the short way",
          "Links need the full path, like [[Maps & Manuals/Me|Me]]. Written short, "
          "Obsidian cannot follow them and the note goes missing from the graph.",
@@ -900,7 +897,8 @@ def main():
     warnings = (warn_onboarding_state() + warn_local_permission_grants()
                 + warn_stale_questions(files)
                 + warn_system_state() + warn_stale_efforts()
-                + warn_expired_content(files) + warn_effort_names_in_skills(files))
+                + warn_expired_content(files) + warn_effort_names_in_skills(files)
+                + warn_skill_list_budget())
     if warnings:
         print("Worth a look, but nothing is blocked:")
         for line in warnings:
