@@ -40,11 +40,25 @@ GENERATED = {
 }
 
 
+def is_generated(path: str) -> bool:
+    """Files build_views.py writes. Staged with the commit, but never evidence
+    that a human step was done."""
+    return path in GENERATED or (
+        path.startswith(".claude/skills/") and path.endswith("/SKILL.md")
+    )
+
+
 def git(*args: str) -> str:
+    """Raw stdout with only the trailing newline removed.
+
+    Deliberately not .strip(): porcelain status encodes the state in the first
+    two columns, so a leading space is data. Stripping it shifts every column
+    on the first line and silently eats the first character of that path.
+    """
     out = subprocess.run(
         ["git", "-C", str(VAULT), *args], capture_output=True, text=True
     )
-    return out.stdout.strip()
+    return out.stdout.rstrip("\n")
 
 
 def parse_frontmatter(path: Path) -> dict:
@@ -69,7 +83,7 @@ def changed_paths() -> list[tuple[str, str]]:
     """(status, path) for everything git sees, including untracked."""
     rows = []
     for line in git("status", "--porcelain=v1").splitlines():
-        if not line:
+        if len(line) < 4:
             continue
         status, path = line[:2].strip(), line[3:].strip()
         if path.startswith('"') and path.endswith('"'):
@@ -143,8 +157,8 @@ def main() -> int:
         print(commit_command(paths))
         return 0
 
-    substantive = [p for p in paths if p not in GENERATED]
-    generated = [p for p in paths if p in GENERATED]
+    substantive = [p for p in paths if not is_generated(p)]
+    generated = [p for p in paths if is_generated(p)]
     efforts = sorted({e for p in paths if (e := effort_of(p))})
 
     out: list[str] = []
@@ -255,7 +269,7 @@ def main() -> int:
     add("")
     add("  End the message with:  Agent: <name and model>")
 
-    unpushed = git("rev-list", "--count", "@{u}..HEAD")
+    unpushed = git("rev-list", "--count", "@{u}..HEAD").strip()
     if unpushed and unpushed != "0":
         add("")
         add(f"  Note: {unpushed} commit(s) not pushed. Ask before pushing.")

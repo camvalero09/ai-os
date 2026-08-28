@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.4 (2026-08-28)
+
+**Fixed**
+
+- **The new handover report showed one filename with its first letter missing, and treated auto-generated files as work needing review.** Both were bugs in v2.3, found the first time the script ran for real. Any file starting with a dot, which on this system means anything under `.claude`, lost that dot and would not have matched the file it named. Harmless to read, but a save command built from it would have failed. Fixed the same day.
+
+---
+
 ## v2.3 (2026-08-28)
 
 **Changed**
