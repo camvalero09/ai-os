@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.6 (2026-08-28)
+
+**Added**
+
+- **A way to check whether agents actually read your rules before working.** Your `CLAUDE.md` and `AGENTS.md` both tell every agent to read two files before starting anything. Nobody had ever checked whether that happens. `scripts/entry_compliance.py` counts it across both Claude and Codex sessions on your machine, and the first run was not comforting: across 149 real sessions it happened 56% of the time, and in short sessions only a quarter to a third of the time. Short sessions are where a quick unconsidered action is most likely, which is exactly what those rules exist to prevent. The script prints counts only and never reads out transcript content, since those files are known to contain credentials that past sessions opened.
+
+---
+
 ## v2.5 (2026-08-28)
 
 **Fixed**
