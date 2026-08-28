@@ -10,6 +10,19 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.3 (2026-08-28)
+
+**Changed**
+
+- **Closing a session is cheaper.** Ending a session used to mean the agent rediscovering, by hand, what had changed, which projects those files belonged to, whether the log rows were added and which paths to save. All of that is work a machine can do, and doing it in conversation cost thousands of words of the agent's attention every time. There is now a script, `scripts/handover.py`, that reports it in one step and prints the exact save command. The agent is left with the part that actually needs a mind: rewriting the project note, deciding what is worth keeping, and naming what went wrong.
+- **The handover instructions were cut in half above the fold.** The note is now a short set of steps, with the reasoning and the old failures moved below a line marked "stop here in a normal handover". Nothing was deleted; it is just no longer read in full every single time.
+
+**Fixed**
+
+- **Editing the system from inside a vault used to fail silently.** The `System/` folder is a separate, version-pinned copy that your vault deliberately ignores when saving. So an agent that edited a skill there would be told the session had no changes, save nothing, and lose the work; and because that copy is pinned, saving in place would have left the change stranded where nobody could get it. The handover script now checks for this and says so, pointing at the authoring instructions. Found the hard way while writing this version.
+
+---
+
 ## v2.1 (2026-08-20)
 
 **Fixed**
