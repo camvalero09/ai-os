@@ -8,7 +8,11 @@ NOTE="Ideaverse/Calendar/${WEEK} - Weekly Review.md"
 LOG="scripts/logs/weekly-${WEEK}.log"
 {
   echo "=== Weekly maintenance ${WEEK} ($(date)) ==="
-  python3 scripts/build_views.py
+  # Capture what was regenerated so the commit below can name those files
+  # explicitly. Staging whole directories would sweep in a parallel
+  # session's half-finished work, which has happened twice.
+  BUILD_OUT=$(python3 scripts/build_views.py)
+  print -r -- "$BUILD_OUT"
   python3 scripts/vault_lint.py
   LINT_STATUS=$?
   if [ ! -f "$NOTE" ]; then
@@ -37,7 +41,26 @@ LOG="scripts/logs/weekly-${WEEK}.log"
   else
     echo "claude CLI not found; mechanical pass only"
   fi
-  git add "Ideaverse/Calendar" "Ideaverse/Efforts" "Maps & Manuals" "Ideaverse/Atlas" 2>/dev/null
-  git commit -q -m "Weekly maintenance ${WEEK}" || echo "nothing to commit"
+  # Stage only what this run produced: the weekly note and the files
+  # build_views reported regenerating. The agent pass commits its own work
+  # under step 12 of the workflow, so nothing here needs to catch it.
+  typeset -a STAGE
+  STAGE=()
+  [ -f "$NOTE" ] && STAGE+=("$NOTE")
+  while IFS= read -r line; do
+    case "$line" in
+      "regenerated: "*) f="${line#regenerated: }"; [ -f "$f" ] && STAGE+=("$f") ;;
+    esac
+  done <<< "$BUILD_OUT"
+  if [ ${#STAGE[@]} -gt 0 ]; then
+    # -o commits only these paths and ignores anything else already staged.
+    git commit -o -q -m "Weekly maintenance ${WEEK}" -- "${STAGE[@]}" \
+      || echo "nothing to commit"
+  else
+    echo "nothing this run produced; not committing"
+  fi
+  if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+    echo "note: other uncommitted changes left alone (another session may be live)"
+  fi
   git remote get-url origin >/dev/null 2>&1 && git push -q || echo "no remote configured; skipping push"
 } >> "$LOG" 2>&1

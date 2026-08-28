@@ -19,6 +19,7 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 **Fixed**
 
+- **Weekly maintenance could commit another session's unfinished work.** The unattended weekly script saved four whole folders at once, so if you or another agent had a file half-written in any of them, it got swept into the weekly save under a message that had nothing to do with it. The history then said the wrong thing about who changed what, which is the one thing a history has to get right. It now saves only the files it produced itself, by name. This is the same rule the written instructions already gave the agent; the script simply had never been held to it.
 - **Editing the system from inside a vault used to fail silently.** The `System/` folder is a separate, version-pinned copy that your vault deliberately ignores when saving. So an agent that edited a skill there would be told the session had no changes, save nothing, and lose the work; and because that copy is pinned, saving in place would have left the change stranded where nobody could get it. The handover script now checks for this and says so, pointing at the authoring instructions. Found the hard way while writing this version.
 
 ---
