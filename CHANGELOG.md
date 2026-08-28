@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.10 (2026-08-28)
+
+**Changed**
+
+- **The project table on your dashboard no longer repeats every project's whole next step.** It copied each project's next action in full, so the dashboard carried several hundred words that already existed, word for word, one click away in the project note. It now shows the first sentence and links to the rest. The table answers "what is next on each project", not "brief me on everything".
+
+---
+
 ## v2.9 (2026-08-28)
 
 **Added**

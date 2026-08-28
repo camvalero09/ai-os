@@ -242,6 +242,26 @@ def open_question_count(effort_dir) -> int:
     return n
 
 
+NEXT_ACTION_CHARS = 150
+
+
+def _first_action(text: str) -> str:
+    """The first sentence of a next action, capped.
+
+    The full field is in the effort note and the table links to it, so
+    repeating all of it here made Active Context carry 620 words that already
+    existed one hop away. One sentence answers the question this table is for,
+    which is "what is the next thing on each project", not "brief me".
+    """
+    text = (text or "").strip()
+    if not text:
+        return ""
+    first = re.split(r"(?<=[.:])\s", text, maxsplit=1)[0].strip()
+    if len(first) > NEXT_ACTION_CHARS:
+        first = first[:NEXT_ACTION_CHARS].rsplit(" ", 1)[0] + "..."
+    return first + (" [...]" if len(first) < len(text) else "")
+
+
 def render_active_context_efforts() -> str:
     efforts = collect_efforts()
     # One line per project, which is the view actually wanted when asking
@@ -259,7 +279,7 @@ def render_active_context_efforts() -> str:
             status = f"active (stale {age}d)"
         d = VAULT / "Ideaverse/Efforts" / e["_dir"] if e.get("_dir") else None
         q = open_question_count(d) if d else 0
-        lines.append(f"| {e['_link']} | {status} | {e.get('next', '')} "
+        lines.append(f"| {e['_link']} | {status} | {_first_action(e.get('next', ''))} "
                      f"| {e.get('blocked_on', '') or '-'} | {q or '-'} |")
     return "\n".join(lines)
 
