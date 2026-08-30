@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.24 (2026-08-30)
+
+**Fixed**
+
+- **A new vault never started the session heartbeat.** The sessions table added in v2.21 depends on two small hooks that run when a session opens and as it works. Those hooks were added to this vault by hand and never to the file a new install copies, so anyone installing fresh got the table with nothing feeding it: every session would have looked invisible to every other. Updating from an older version had the mirror problem, since the update step that refreshes settings would have removed the two hooks from a vault that had them. Found while installing v2.23.
+
+---
+
 ## v2.23 (2026-08-30)
 
 **Fixed**

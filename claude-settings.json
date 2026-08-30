@@ -33,6 +33,26 @@
             "statusMessage": "Checking for destructive commands..."
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/System/scripts/sessions.py\" --beat"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/System/scripts/sessions.py\" --start",
+            "statusMessage": "Opening a session heartbeat..."
+          }
+        ]
       }
     ]
   }
