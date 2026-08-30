@@ -21,6 +21,10 @@ python3 System/scripts/handover.py
 
 It reports what changed, which efforts those files belong to, which steps are already done, and the exact commit command. **Do what it says, then run it again until the checks pass.** Everything below the fold in this note is background; you do not need it for a normal handover.
 
+Finish with `python3 System/scripts/sessions.py --handover`, which records that this session closed properly. A session that ends without it leaves a marked debt for the next agent.
+
+**Handover is no longer where work gets saved.** Each unit of work was committed as it finished, so what remains here is the sense-making: the part that needs the whole session in view.
+
 The script does the checkable half. The half it cannot do is the reason this workflow exists:
 
 - **Rewriting each effort note to say what is true now.** Replace, do not append. If it cannot be read in one screen it has failed.

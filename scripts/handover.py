@@ -265,7 +265,8 @@ def main() -> int:
         "7. Agent Log Section 2: this session's mistakes, one line each. 'None' is fine.",
         "8. Private/Outside View.md: one observation, or 'nothing new this session'.",
         "9. Run build_views.py, then vault_lint.py, then commit the paths below.",
-        "10. Write the human wrap-up: what happened, and what only Camilo can decide.",
+        "10. Run sessions.py --handover to record that this session closed properly.",
+        "11. Write the human wrap-up: what happened, and what only Camilo can decide.",
     ]:
         add(f"  {line}")
 

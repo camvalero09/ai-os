@@ -10,6 +10,24 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.21 (2026-08-30)
+
+**Added**
+
+- **Sessions can now see each other.** When several agents work in one vault at the same time, none of them could tell whether someone else was already in the same project. Each session now leaves a small "still here" file and refreshes it as it works. `System/scripts/sessions.py` prints one table: who is working, on what, what nobody has saved yet, and which sessions ended without a handover. A session counts as over when its file stops being refreshed, so a crashed or closed session ends by itself instead of looking open forever.
+- **Agent commits name their session.** A new `commit-msg` hook blocks any commit that has an `Agent:` line but no `Session:` line, so work can be traced back to the session that did it. Your own commits, which have no `Agent:` line, are never checked.
+
+**Changed**
+
+- **Commit as you go, not only at the end.** The old rule was to commit when the session finished. When a session ended badly, and most do, its work sat in the vault for days with nothing to say whose it was. Agents now commit each finished unit of work.
+- **Handover records itself.** `sessions.py --handover` marks a session as properly closed, so the next agent can be told which sessions ended without one and may have left a note out of date.
+
+**Watch for**
+
+- Only Claude Code writes the "still here" file on its own. Other tools stay invisible unless they call the script, so an empty table is never proof that nobody else is working.
+
+---
+
 ## v2.2 (2026-08-20)
 
 **Fixed**

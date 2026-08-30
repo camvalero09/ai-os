@@ -1,0 +1,30 @@
+#!/bin/sh
+# Commit-message hook for the vault.
+#
+# Every agent commit must name the session that made it, so the sessions table
+# can say which work belongs to whom. Matching commits to sessions any other
+# way was tried and failed: a session that merely ran `git log` contains the
+# SHA and the subject of commits it never made.
+#
+# Only agent commits are checked. A commit with no `Agent:` line was written by
+# Camilo by hand and passes untouched: this hook exists to hold agents to a
+# rule, not to get in his way.
+#
+# Installed via: python3 System/scripts/install_hook.py
+
+msg="$1"
+[ -f "$msg" ] || exit 0
+
+if grep -qi '^Agent:' "$msg" && ! grep -qi '^Session:' "$msg"; then
+    echo ""
+    echo "Commit blocked: this is an agent commit with no Session: line."
+    echo ""
+    echo "End the message with both, so the sessions table can attribute it:"
+    echo "  Agent: <name and model>"
+    echo "  Session: <the id from logs/sessions/, e.g. 8ca10521>"
+    echo ""
+    echo "Your own commits, without an Agent: line, are never checked."
+    exit 1
+fi
+
+exit 0

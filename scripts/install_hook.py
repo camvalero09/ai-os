@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Install the pre-commit lint hook. Works on macOS, Linux and Windows.
+"""Install the vault git hooks. Works on macOS, Linux and Windows.
+
+Two hooks: pre-commit runs the lint, commit-msg requires a Session: line on
+agent commits.
 
 Why this exists rather than a one-line `ln -sf`: symlinks do not survive zip or
 AirDrop transfer reliably, and on Windows they need developer mode or admin
@@ -37,27 +40,29 @@ def main() -> int:
         print("Not inside a git repository. Run `git init` first.", file=sys.stderr)
         return 1
 
-    real = root / "System" / "scripts" / "pre-commit"
-    if not real.exists():
-        real = root / "scripts" / "pre-commit"  # system repo run on its own
-    if not real.exists():
-        print(f"Missing {real}. Is this a complete vault?", file=sys.stderr)
-        return 1
-
     hooks = root / ".git" / "hooks"
     hooks.mkdir(parents=True, exist_ok=True)
-    target = hooks / "pre-commit"
 
-    if target.is_symlink() or target.exists():
-        target.unlink()
-    target.write_text(SHIM.format(rel=real.relative_to(root).as_posix()), encoding="utf-8")
+    for name in ("pre-commit", "commit-msg"):
+        real = root / "System" / "scripts" / name
+        if not real.exists():
+            real = root / "scripts" / name  # system repo run on its own
+        if not real.exists():
+            print(f"Missing {real}. Is this a complete vault?", file=sys.stderr)
+            return 1
 
-    if os.name != "nt":
-        # Windows has no execute bit; git-bash runs the hook regardless.
-        for f in (target, real):
-            f.chmod(f.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        target = hooks / name
+        if target.is_symlink() or target.exists():
+            target.unlink()
+        target.write_text(SHIM.format(rel=real.relative_to(root).as_posix()),
+                          encoding="utf-8")
 
-    print(f"Hook installed at {target}")
+        if os.name != "nt":
+            # Windows has no execute bit; git-bash runs the hook regardless.
+            for f in (target, real):
+                f.chmod(f.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+        print(f"Hook installed at {target}")
     print("Verify it works by trying to commit a note with an invalid status:")
     print("  a hook that is not installed looks exactly like one that passes.")
     return 0
