@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.22 (2026-08-30)
+
+**Fixed**
+
+- **The sessions table recorded nonsense project names.** It worked out which project a session was in by reading the file being edited, but it also read shell commands, so a quoted command was recorded as a project called `Efforts Index.md"; echo "########## 3. sistema`. A project name is now only accepted if a folder by that name actually exists. Found on the first session that used v2.21.
+
+---
+
 ## v2.21 (2026-08-30)
 
 **Added**
