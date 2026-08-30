@@ -100,8 +100,14 @@ def edited_effort(data: dict):
     path = ti.get("file_path") or ti.get("path") or ""
     if not path and data.get("tool_name") == "Bash":
         path = ti.get("command", "")
-    m = EFFORT_RE.search(str(path))
-    return m.group(1) if m else None
+    for m in EFFORT_RE.finditer(str(path)):
+        name = m.group(1)
+        # Bash commands are quoted strings, not paths, so the pattern happily
+        # captured `Efforts Index.md"; echo "########## 3. sistema` as an
+        # effort. Only a folder that actually exists is a claim.
+        if (VAULT / "Ideaverse" / "Efforts" / name).is_dir():
+            return name
+    return None
 
 
 def newest_mtime(path: Path) -> float:
