@@ -14,6 +14,7 @@ tab, a slept laptop or a crash. Nothing ever writes "closed".
     python3 System/scripts/sessions.py --start    # open a heartbeat, then table
     python3 System/scripts/sessions.py --beat     # refresh the pulse, silent
     python3 System/scripts/sessions.py --handover # mark the handover as done
+    python3 System/scripts/sessions.py --handover 8ca10521   # a session by id
 
 --start and --beat are called by hooks in .claude/settings.json, so a Claude
 Code session appears whether or not it read the rules. Anything else (Codex,
@@ -28,12 +29,14 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
 
 ACTIVE_MINUTES = 10      # a pulse this fresh means someone is working now
 ENDED_HOURS = 6          # no pulse this long means the session is over
+STDIN_WAIT = 0.5         # seconds to wait for hook JSON before giving up on it
 UNIDENTIFIED_MINUTES = 10  # a file touched this recently with no owner
 
 EFFORT_RE = re.compile(r"Efforts/([^/]+)/")
@@ -70,13 +73,61 @@ BEATS = VAULT / "logs" / "sessions"   # logs/ is gitignored, so beats never comm
 # --------------------------------------------------------------------------
 
 def hook_input() -> dict:
-    """Claude Code hooks pass JSON on stdin. Never let a parse error surface."""
+    """Claude Code hooks pass JSON on stdin. Never let a parse error surface,
+    and never block. Run by hand from an agent's shell, stdin is an open pipe
+    nobody will ever write to, and a plain read waits there forever: that is
+    how --handover hung until it was killed. A hook's JSON is already written
+    by the time this runs, so a short wait costs a hook nothing."""
     if sys.stdin is None or sys.stdin.isatty():
         return {}
+    box = {}
+
+    def read():
+        try:
+            box["raw"] = sys.stdin.read()
+        except (ValueError, OSError):
+            box["raw"] = ""
+
+    t = threading.Thread(target=read, daemon=True)
+    t.start()
+    t.join(STDIN_WAIT)
     try:
-        return json.loads(sys.stdin.read() or "{}")
-    except (ValueError, OSError):
+        return json.loads(box.get("raw") or "{}")
+    except ValueError:
         return {}
+
+
+def handover_target(args: list, data: dict):
+    """Which heartbeat --handover should mark. Returns (file, problem).
+
+    Run by hand there is no hook JSON, so an explicit id wins, then the
+    environment, then the one session that is actually live. Guessing between
+    several live sessions would record the wrong one, so it asks instead.
+    """
+    sid = None
+    for a in args:
+        if a.startswith("--session="):
+            sid = a.split("=", 1)[1]
+    if not sid:
+        i = args.index("--handover")
+        if i + 1 < len(args) and not args[i + 1].startswith("-"):
+            sid = args[i + 1]
+    sid = sid or data.get("session_id") or os.environ.get("AIOS_SESSION_ID")
+    if sid:
+        f = BEATS / ("%s.json" % str(sid)[:8])
+        if f.exists():
+            return f, None
+        return None, "No heartbeat for session %s; nothing to record." % str(sid)[:8]
+
+    live = [b for b in load_beats() if b.get("state") == "ACTIVE"]
+    if len(live) == 1:
+        return live[0]["file"], None
+    if not live:
+        return None, ("No live session found. Pass the id of the one to close: "
+                      "sessions.py --handover <id>")
+    ids = ", ".join(str(b.get("id", "?")) for b in live)
+    return None, ("More than one session is live (%s). Pass the id of this one: "
+                  "sessions.py --handover <id>" % ids)
 
 
 def session_id(data: dict) -> str:
@@ -365,15 +416,14 @@ def main() -> int:
 
     if "--handover" in args:
         try:
-            data = hook_input()
-            f = BEATS / ("%s.json" % session_id(data))
-            if f.exists():
+            f, problem = handover_target(args, hook_input())
+            if f is not None:
                 b = json.loads(f.read_text(encoding="utf-8"))
                 b["handover"] = True
                 f.write_text(json.dumps(b, indent=2), encoding="utf-8")
                 print("Handover recorded for session %s." % b.get("id"))
             else:
-                print("No heartbeat for this session; nothing to record.")
+                print(problem)
         except Exception as e:
             print("Could not record the handover: %s" % e)
         return 0

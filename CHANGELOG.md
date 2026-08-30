@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.23 (2026-08-30)
+
+**Fixed**
+
+- **Closing a session properly could hang.** The command that records a handover waited for information that only arrives when the system calls it automatically. Run by an agent by hand, it waited for something that was never coming and had to be killed after two minutes. It now stops waiting after half a second. If it cannot tell which session it is closing it says so and asks, rather than recording the wrong one, and a session can now be closed by name: `sessions.py --handover 8ca10521`.
+
+---
+
 ## v2.22 (2026-08-30)
 
 **Fixed**
