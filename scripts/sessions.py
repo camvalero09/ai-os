@@ -87,33 +87,21 @@ def session_id(data: dict) -> str:
     return "pid%d" % os.getppid()
 
 
-def recent_efforts(minutes: int = 30) -> list:
-    """Which efforts have been touched lately, from the working tree itself.
+def edited_effort(data: dict):
+    """The effort this tool call is about to write to, or None.
 
-    Read from files rather than from the transcript, so it works for any agent.
+    Read from the hook's own tool input, never from the working tree. Scanning
+    recently changed files instead made every beating session claim every
+    effort that happened to change while it was alive, so this session claimed
+    another agent's Ford Escape files. A claim has to come from what this
+    session is doing, not from what merely happened nearby.
     """
-    cutoff = time.time() - minutes * 60
-    found = {}
-    try:
-        out = subprocess.run(
-            ["git", "status", "--porcelain"],
-            capture_output=True, text=True, cwd=VAULT,
-        ).stdout
-    except OSError:
-        return []
-    for line in out.splitlines():
-        path = line[3:].strip().strip('"')
-        m = EFFORT_RE.search(path)
-        if not m:
-            continue
-        full = VAULT / path
-        try:
-            mt = newest_mtime(full)
-        except OSError:
-            continue
-        if mt >= cutoff:
-            found[m.group(1)] = max(found.get(m.group(1), 0), mt)
-    return [k for k, _ in sorted(found.items(), key=lambda kv: -kv[1])][:3]
+    ti = data.get("tool_input") or {}
+    path = ti.get("file_path") or ti.get("path") or ""
+    if not path and data.get("tool_name") == "Bash":
+        path = ti.get("command", "")
+    m = EFFORT_RE.search(str(path))
+    return m.group(1) if m else None
 
 
 def newest_mtime(path: Path) -> float:
@@ -150,9 +138,9 @@ def write_beat(data: dict, starting: bool) -> Path:
     # effort has not stopped owning the one it edited an hour ago, and dropping
     # the older claim is what leaves its files reading as unclaimed.
     claimed = list(beat.get("efforts", []))
-    for e in recent_efforts():
-        if e not in claimed:
-            claimed.append(e)
+    e = edited_effort(data)
+    if e and e not in claimed:
+        claimed.append(e)
     if claimed:
         beat["efforts"] = claimed[:6]
     f.write_text(json.dumps(beat, indent=2), encoding="utf-8")
@@ -305,6 +293,11 @@ def print_unfinished(beats: list) -> None:
         effort = m.group(1) if m else None
         owner = "unclaimed"
         for b in live:
+            # A session cannot own a change that predates it. Without this the
+            # 2026-08-29 orphans were attributed to a session that opened a day
+            # and a half later, purely because it worked in the same effort.
+            if mt < b.get("started", 0):
+                continue
             if effort and effort in b.get("efforts", []):
                 owner = "%s (%s)" % (b.get("id"), b.get("agent"))
                 break
