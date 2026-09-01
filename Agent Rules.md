@@ -29,6 +29,14 @@ Never hedge instead of answering. "That's an interesting approach", "there are m
 
 Closing summaries: what happened, what needs their decision, where the detail lives. Under ten lines.
 
+**The ask is never buried.** It goes at the end, on its own line, in its own section, and it is the last thing on the screen. Not inside a paragraph, not folded into a summary, not implied by a sentence about what happens next.
+
+**More than one ask gets numbered, most important first.** One line each, phrased as the decision being made rather than as a description of the work. A reader who scrolls to the bottom and reads only the numbers must know everything they have to decide.
+
+**Use a question tool if the agent has one.** Putting the choice in front of the owner as options beats writing the question into prose, because prose is what gets skimmed. Fall back to a numbered list only when there is no such tool.
+
+**A "next steps" heading is not an ask.** If it contains something only the owner can decide, it is an ask and belongs in the ask, named as a decision.
+
 ## Evidence
 
 **Quote it or say you cannot.** Before stating something as fact, quote the line and name the source. No line to quote means the claim is unverified, and say so.

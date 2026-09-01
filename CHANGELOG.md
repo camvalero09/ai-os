@@ -10,6 +10,20 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.27 (2026-09-01)
+
+**Added**
+
+- **Your vault now checks that its own passwords are staying out of its backup.** It runs on every save and stops the save if something is wrong, because the save it stops is the one that would publish the password. Four things it looks at: whether a credential is being tracked right now, whether one was ever saved in the past even if the file has since been deleted, whether `.gitignore` covers every place a credential lands, and whether a credential file can be read by other accounts on your computer. Each answer comes with the exact command that fixes it. If a credential ever reached a save, reissue it: history is permanent, deleting the file does not remove it, and resetting a token is free and instant.
+
+**Changed**
+
+- **A vault set up before v2.26 now migrates itself.** Getting the shared rules used to need someone to know about a command and run it, which meant a vault whose owner had not been told would go on receiving no improvements at all. The update now does it: the personal card is added to your `Me.md` during the same steps you already run, everything already in that file is kept exactly where it is, and running it twice does nothing. What it cannot do is invent facts about you, so the slots it adds are marked `TO FILL IN` and your vault reminds you how many are left on every save until you answer them.
+
+- **The rule about ending a message with the ask got stricter.** An ask buried in a paragraph, or dressed as "next steps", is one the reader misses. It now has to be the last thing on the screen, in its own section. More than one gets numbered with the most important first, each phrased as the decision you are being asked to make. Where the agent has a tool for putting a question in front of you as options, it uses that instead of writing the question into prose.
+
+---
+
 ## v2.26 (2026-09-01)
 
 **Changed**

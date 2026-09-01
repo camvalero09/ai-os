@@ -541,6 +541,24 @@ def warn_entry_file_budget():
             f"move a section that has become a procedure into a skill."]
 
 
+def check_credentials_are_safe():
+    """Passwords must not be in the backup, and blocking the save is the point.
+
+    A vault seeded before the secret-patterns fix had no .gitignore, so its
+    first save would have committed its own credentials. Nothing told the owner
+    then and nothing would tell them now, which is why this is an error rather
+    than a note: the save it blocks is the one that would publish the token.
+    """
+    try:
+        from check_credentials import check, vault_root
+    except ImportError:
+        return []
+    vault = vault_root()
+    if vault is None:
+        return []
+    return ["  " + line for line in check(vault)]
+
+
 def check_shared_rules_are_impersonal():
     """The one file every installation loads must name nobody.
 
@@ -575,6 +593,29 @@ def _git(repo: Path, *args) -> str:
     except (OSError, subprocess.SubprocessError):
         return ""
     return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def warn_card_blanks():
+    """The migration writes the card; only the owner can fill it in.
+
+    `adopt_card.py` runs itself during an update, so a vault gets the shape
+    without anyone deciding to. What it cannot do is invent who the owner is,
+    so it leaves marked blanks. A blank left in place means every session
+    starts by reading TO FILL IN as though it were a fact about the person.
+    """
+    me = VAULT / "Maps & Manuals/Me.md"
+    if not me.is_file():
+        return []
+    card = re.search(r"<!-- BEGIN CARD -->\n(.*?)<!-- END CARD -->",
+                     me.read_text(encoding="utf-8"), re.DOTALL)
+    if not card:
+        return []
+    blanks = card.group(1).count("TO FILL IN")
+    if not blanks:
+        return []
+    return [f"Maps & Manuals/Me.md: the card has {blanks} blank(s) still marked "
+            "TO FILL IN, and agents read the card in every session. Answer them "
+            "in your own words, then: python3 System/scripts/build_views.py"]
 
 
 def warn_system_state():
@@ -976,6 +1017,12 @@ def main():
         ("A note has a status the vault does not recognise",
          "Allowed values: " + ", ".join(sorted(ALLOWED_STATUSES)) + ".",
          check_status_vocabulary(files)),
+        ("This vault's passwords are not being kept out of its backup",
+         "Git history is permanent: a credential that reaches it is public for good, "
+         "even after the file is deleted. Each line above names the command that "
+         "fixes it. Reissuing a token is free and instant; treat any credential that "
+         "reached a commit as compromised.",
+         check_credentials_are_safe()),
         ("The shared rules file names somebody",
          "System/Agent Rules.md ships to every installation and a published version "
          "can never be amended. Move the detail into the owner's own card in "
@@ -1037,6 +1084,7 @@ def main():
 
     warnings = (warn_onboarding_state() + warn_local_permission_grants()
                 + warn_stale_questions(files)
+                + warn_card_blanks()
                 + warn_system_state() + warn_stale_efforts()
                 + warn_expired_content(files) + warn_effort_names_in_skills(files)
                 + warn_skill_list_budget()

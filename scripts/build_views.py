@@ -18,6 +18,7 @@ Usage:
 
 import os
 import re
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -490,12 +491,27 @@ def generate_entry_files(check: bool):
         return []
     personal = read_card(me)
     if not personal:
-        # No card section means this vault has not adopted generated entry
-        # files. Say nothing and touch nothing: a hand-written CLAUDE.md is
-        # somebody's own work and overwriting it would be the worst possible
-        # way to deliver an update. `scripts/adopt_card.py` migrates such a
-        # vault, with its owner present.
-        return []
+        # A vault installed before v2.26 has no card, so it would receive every
+        # future improvement to the shared rules as nothing at all. Migrating
+        # it is safe by construction: the card is inserted above whatever is
+        # already there, nothing is deleted, and running it twice does nothing.
+        # So it runs itself rather than waiting to be asked, which is what "not
+        # optional" has to mean in a vault whose owner is not technical.
+        #
+        # Never under --check: that runs inside the lint on every save, and a
+        # check that writes is not a check.
+        if check:
+            return list(ENTRY_FILES)
+        adopt = SYSTEM / "scripts/adopt_card.py"
+        if adopt.exists():
+            subprocess.run([sys.executable, str(adopt), "--yes"],
+                           capture_output=True, text=True)
+            personal = read_card(me)
+        if not personal:
+            # The migration could not run. Still never overwrite a CLAUDE.md
+            # somebody wrote by hand: that is the worst possible way to deliver
+            # an update.
+            return []
     shared = read_card(SYSTEM / "Agent Rules.md")
     card = personal + ("\n\n" + shared if shared else "")
     # Wikilinks are for Obsidian, which reads Me.md. An agent reads the entry

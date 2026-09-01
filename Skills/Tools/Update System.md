@@ -142,15 +142,13 @@ Anything under `System/` is shared with every other installation. That is the wh
 
 **The shared half is the newest way to leak.** Before it existed there was no shared prose file to write a name into by accident. `scripts/check_shared_rules.py` runs inside the lint and refuses a commit that puts a name, address, home path or effort into it, because a published tag can never be amended.
 
-**A vault installed before v2.26 receives none of this until it migrates.** Its `Me.md` has no card, so `build_views.py` correctly refuses to touch its hand-written `CLAUDE.md`. One command, with the owner present:
+**A vault installed before v2.26 migrates itself, from v2.27.** Its `Me.md` had no card, so it would have received every future improvement to the rules as nothing at all. `build_views.py` now runs `scripts/adopt_card.py` when it finds no card, which happens during the update steps above without anyone having to know about it.
 
-```bash
-python3 System/scripts/adopt_card.py         # says what it would do
-python3 System/scripts/adopt_card.py --yes   # inserts the card, deletes nothing
-python3 System/scripts/build_views.py
-```
+The migration is safe by construction: it inserts the card above whatever is already in `Me.md`, deletes nothing, and does nothing at all the second time. It never runs under `--check`.
 
-It leaves every word already in `Me.md` below the card and marks the personal slots `TO FILL IN`. Only the owner can answer those.
+**What it cannot do is invent the owner.** The slots it writes are marked `TO FILL IN`, and the lint says how many are left on every save until they are answered. Only the owner can answer them.
+
+**Credentials check themselves too, from v2.27.** `scripts/check_credentials.py` runs inside the lint and blocks the save if a credential is tracked, was ever committed, is missing from `.gitignore`, or is readable by other accounts. Each line names the command that fixes it. A credential that reached any commit is compromised and must be reissued, because git history is permanent and deleting the file does not remove it.
 
 ---
 
