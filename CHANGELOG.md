@@ -10,6 +10,14 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.25 (2026-09-01)
+
+**Fixed**
+
+- **The sessions table went blank on some vaults.** If your history contained even one save recorded with a title and no description, the script that lists who is working printed its heading and then stopped, so you saw an empty table instead of an error. It looked like nobody was working, which is the one thing that table exists to tell you. Reported from another installation, where every save had been made that way. Any vault can hit it: the check only looks at the most recent sixty saves, so a vault can be fine for months and then break the day an old save comes back into range.
+
+---
+
 ## v2.24 (2026-08-30)
 
 **Fixed**

@@ -271,7 +271,12 @@ def commits_by_session(limit: int = 60) -> dict:
     for entry in log.split("\x1e"):
         if "\x1f" not in entry:
             continue
-        date, subject, body = entry.strip().split("\x1f", 2)
+        # %b is empty for a subject-only commit, leaving a trailing \x1f that
+        # str.strip() removes, since Python counts it as whitespace. Splitting
+        # the raw entry keeps the third field even when it is empty.
+        fields = entry.split("\x1f", 2)
+        date, subject = fields[0].strip(), fields[1].strip()
+        body = fields[2] if len(fields) > 2 else ""
         sid = None
         for line in body.splitlines():
             if line.strip().lower().startswith("session:"):
