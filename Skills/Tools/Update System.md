@@ -129,9 +129,28 @@ Do not send anything containing personal content. A workflow that names a specif
 | Shared skills and workflows | This person's own skills |
 | The scripts: lint, generated views, safety check, integrations | Their notes, efforts, and sources |
 | The canonical settings file | Their `Me.md`, `Active Context.md`, `Agent Log.md` |
+| The shared rules in [[System/Agent Rules\|Agent Rules]] | The personal card inside their `Me.md` |
 | The changelog and setup guides | Their `vault.config.json` and credentials |
 
 Anything under `System/` is shared with every other installation. That is the whole rule, and it is why nothing personal is ever written there.
+
+### The one file that spans both
+
+`CLAUDE.md` and `AGENTS.md` are generated, and from v2.26 they are built from two cards: the personal one in `Maps & Manuals/Me.md` and the shared one in [[System/Agent Rules|Agent Rules]]. That is how an improvement to the rules reaches every installation while nothing personal ever moves.
+
+**An update never writes to `Me.md`.** It replaces the shared half and regenerates the entry files, which the update steps above already do.
+
+**The shared half is the newest way to leak.** Before it existed there was no shared prose file to write a name into by accident. `scripts/check_shared_rules.py` runs inside the lint and refuses a commit that puts a name, address, home path or effort into it, because a published tag can never be amended.
+
+**A vault installed before v2.26 receives none of this until it migrates.** Its `Me.md` has no card, so `build_views.py` correctly refuses to touch its hand-written `CLAUDE.md`. One command, with the owner present:
+
+```bash
+python3 System/scripts/adopt_card.py         # says what it would do
+python3 System/scripts/adopt_card.py --yes   # inserts the card, deletes nothing
+python3 System/scripts/build_views.py
+```
+
+It leaves every word already in `Me.md` below the card and marks the personal slots `TO FILL IN`. Only the owner can answer those.
 
 ---
 

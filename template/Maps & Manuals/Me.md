@@ -1,5 +1,45 @@
 # Me.md
 
+**The card below is the only part of this file agents receive automatically.** It is joined with [[System/Agent Rules|Agent Rules]], the shared half that arrives with every update, to build `CLAUDE.md` and `AGENTS.md`. Edit the card here; run `python3 System/scripts/build_views.py` to publish.
+
+Everything below the card is guidance for filling it in, and is read only when an agent opens this file.
+
+<!-- BEGIN CARD -->
+## Who the owner is
+
+TO FILL IN. Where they live and where they are from. What they do and what
+they know well. Whether they write code, because an agent that assumes wrong
+is either impenetrable or condescending. Any word that must be explained in
+plain language rather than used as jargon.
+
+## Language and forms of address
+
+TO FILL IN by default; another language when the audience or jurisdiction
+requires it. TO FILL IN: any standing rule about how a particular person is
+addressed.
+
+## Files here that only ever grow
+
+TO FILL IN. Name any log, timeline or decision table in this vault that must
+never be regenerated, reordered or rewritten. The shared rules already cover
+Agent Log Section 1, weekly reviews and decision tables.
+
+## Where to go
+
+| Task | Go to |
+|---|---|
+| What is active now | [[Maps & Manuals/Active Context\|Active Context]] |
+| Where a file belongs | [[Maps & Manuals/Vault Map\|Vault Map]] |
+| A workflow or tool not listed at startup | [[Maps & Manuals/Skill Map\|Skill Map]] |
+| Writing anything others will read | [[Maps & Manuals/Writing Style\|Writing Style]] |
+| Find an existing note | [[Ideaverse/Atlas/Atlas Index\|Atlas Index]] or [[Ideaverse/Efforts/Efforts Index\|Efforts Index]] |
+| A specific person | [[Ideaverse/Atlas/Atlas Index\|Atlas Index]], then `Atlas/People/` |
+| A new source to process | [[System/Skills/Workflows/Process Source into Atlas\|Process Source into Atlas]] |
+
+TO FILL IN: one row per effort, so an agent routes without searching.
+<!-- END CARD -->
+
+
 This is the single source of truth for how AI agents should work with the user.
 
 [[AGENTS]], [[CLAUDE]], Cursor rules, and any other agent-specific files should only redirect here. Do not duplicate this file. When something changes, update this file only.

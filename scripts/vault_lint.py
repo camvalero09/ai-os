@@ -541,6 +541,22 @@ def warn_entry_file_budget():
             f"move a section that has become a procedure into a skill."]
 
 
+def check_shared_rules_are_impersonal():
+    """The one file every installation loads must name nobody.
+
+    Delegated to check_shared_rules.py so the same check can run in the system
+    repository, where there is no vault to lint but where the commit that would
+    publish the leak is actually made.
+    """
+    try:
+        from check_shared_rules import SHARED_RULES, check
+    except ImportError:
+        return []
+    if not SHARED_RULES.exists():
+        return []
+    return ["  " + line for line in check()]
+
+
 def check_views_in_sync():
     result = subprocess.run(
         [sys.executable, str(SYSTEM / "scripts/build_views.py"), "--check"],
@@ -960,6 +976,11 @@ def main():
         ("A note has a status the vault does not recognise",
          "Allowed values: " + ", ".join(sorted(ALLOWED_STATUSES)) + ".",
          check_status_vocabulary(files)),
+        ("The shared rules file names somebody",
+         "System/Agent Rules.md ships to every installation and a published version "
+         "can never be amended. Move the detail into the owner's own card in "
+         "Maps & Manuals/Me.md, which no update ever reads.",
+         check_shared_rules_are_impersonal()),
     ]
     if installed:
         # A shared skill may point at Me.md or the Efforts Index, which exist in

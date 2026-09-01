@@ -10,6 +10,22 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.26 (2026-09-01)
+
+**Changed**
+
+- **Improvements to the agent rules now reach every vault.** The instructions your agent loads at the start of a session used to live entirely in your own `Me.md`, which no update ever touches. That was right for anything personal and wrong for everything else: a better rule written in one vault could never reach another. The rules are now in two halves. The half about you stays in `Me.md`, private and untouched by updates as before. The half that is true in anybody's vault moved into `System/Agent Rules.md` and arrives with each new version, the same as any skill. Your `CLAUDE.md` and `AGENTS.md` are built from both.
+
+- **What arrives in this version is nine rules that were only ever in one vault.** How to write a reply worth reading; quote your source or say you cannot; a check that found nothing must say so; take a position instead of hedging; three failed attempts then stop and reframe; end in one named state rather than trailing off; what to stage and what never to stage when saving; what to read before starting; and when to stop and ask rather than act.
+
+**Added**
+
+- **The shared rules file refuses to carry anything personal.** It is the one file every installation loads, and a published version can never be amended, so the check runs before the save rather than after the release. It blocks a name, an email address, a home path, a phone number or one of your effort names. This repository already paid for that lesson once: there is no history before v2.0 because the earlier commits carried the author's own name, email and home paths.
+
+- **A vault set up before this version can migrate with one command.** `python3 System/scripts/adopt_card.py` says what it would do; `--yes` does it. It adds the personal card to your `Me.md` and leaves every word already in that file exactly where it is. Nothing is deleted and nothing is guessed: the slots it adds are marked `TO FILL IN`, because only you know what belongs in them. Until it runs, an older vault keeps its hand-written `CLAUDE.md` and receives none of the rules above, which is deliberate: silently overwriting a file somebody wrote themselves is the worst possible way to deliver an update.
+
+---
+
 ## v2.25 (2026-09-01)
 
 **Fixed**

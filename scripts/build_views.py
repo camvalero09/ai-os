@@ -459,29 +459,45 @@ WIKILINK_RE = re.compile(r"\[\[([^\]|\\]+)(?:\\?\|[^\]]*)?\]\]")
 CARD_RE = re.compile(r"<!-- BEGIN CARD -->\n(.*?)<!-- END CARD -->", re.DOTALL)
 
 
+def read_card(path: Path) -> str:
+    """The text between the card markers, or "" if the file has no card."""
+    if not path.exists():
+        return ""
+    m = CARD_RE.search(path.read_text(encoding="utf-8"))
+    return m.group(1).strip() if m else ""
+
+
 def generate_entry_files(check: bool):
-    """Write CLAUDE.md and AGENTS.md from the card section of Me.md.
+    """Write CLAUDE.md and AGENTS.md from two cards, personal then shared.
 
     Agents load their entry file automatically; they read Me.md only if they
     decide to. Measured on 2026-08-28, 56% of real sessions made that decision
     and 25 to 32% of short ones did, so rules that lived only in Me.md were
     absent from the sessions most likely to need them.
 
-    The card stays in Me.md, which keeps one home for the content and keeps a
-    vendor's filename out of it. These two files are adapters: delete them,
-    regenerate, and nothing is lost.
+    Two sources, because the two halves have different owners. The personal
+    card in Me.md is this person's alone and no update ever touches it. The
+    shared card in `System/Agent Rules.md` is the same in every installation
+    and arrives with each version, which is the only way an improvement to the
+    rules ever reaches anybody else.
+
+    Personal first: an agent should know who it is working for before it reads
+    the discipline. These two files are adapters: delete them, regenerate, and
+    nothing is lost.
     """
     me = VAULT / "Maps & Manuals/Me.md"
     if not me.exists():
         return []
-    m = CARD_RE.search(me.read_text(encoding="utf-8"))
-    if not m:
+    personal = read_card(me)
+    if not personal:
         # No card section means this vault has not adopted generated entry
         # files. Say nothing and touch nothing: a hand-written CLAUDE.md is
         # somebody's own work and overwriting it would be the worst possible
-        # way to deliver an update.
+        # way to deliver an update. `scripts/adopt_card.py` migrates such a
+        # vault, with its owner present.
         return []
-    card = m.group(1).strip()
+    shared = read_card(SYSTEM / "Agent Rules.md")
+    card = personal + ("\n\n" + shared if shared else "")
     # Wikilinks are for Obsidian, which reads Me.md. An agent reads the entry
     # file and opens things by path, so the [[a/b\|b]] form spends characters
     # naming the same note twice and gives the agent nothing it can use.
@@ -490,13 +506,14 @@ def generate_entry_files(check: bool):
     changed = []
     for name in ENTRY_FILES:
         other = [o for o in ENTRY_FILES if o != name][0]
-        # Nothing but the card. Every section that used to wrap it -- a preamble
-        # explaining the generation, an index of the other Maps & Manuals files,
-        # a "before you start" -- was either restating the card or had gone
-        # stale against it, and it was loaded in every session either way.
+        # Nothing but the cards. Every section that used to wrap them -- a
+        # preamble explaining the generation, an index of the other Maps &
+        # Manuals files, a "before you start" -- was either restating the card
+        # or had gone stale against it, and it was loaded in every session
+        # either way.
         body = f"""# {name}
 
-<!-- {LOADER_MARK} from "Maps & Manuals/Me.md"; edit the card in that note, not this file -->
+<!-- {LOADER_MARK} from "Maps & Manuals/Me.md" and "System/Agent Rules.md"; edit those, not this file -->
 
 Entry point for agents working in this vault. Identical in content to `{other}`.
 
