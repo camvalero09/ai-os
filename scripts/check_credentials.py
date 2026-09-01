@@ -44,8 +44,38 @@ def is_secret(path: str) -> bool:
 
 
 def vault_root() -> Path | None:
-    for parent in Path(__file__).resolve().parents:
+    """Find the vault, including in the vaults that need this check most.
+
+    The `.aios-vault` marker only exists from v2.0. A vault seeded before that
+    is exactly the vault that predates the secret-patterns fix, so insisting on
+    the marker would answer "not a vault" for the installs whose credentials
+    are most likely to be exposed, and exit clean. That is the worst possible
+    failure for this particular check, so it falls back twice.
+
+    It also has to work when this file is dropped straight into a vault folder
+    and run there, rather than from System/scripts/.
+    """
+    here = Path(__file__).resolve()
+    for parent in here.parents:
         if (parent / VAULT_MARKER).exists():
+            return parent
+
+    for start in (here.parent, Path.cwd()):
+        try:
+            r = subprocess.run(["git", "-C", str(start), "rev-parse", "--show-toplevel"],
+                               capture_output=True, text=True, timeout=10)
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if r.returncode == 0 and r.stdout.strip():
+            root = Path(r.stdout.strip())
+            # The system is its own repository cloned inside a vault, so from
+            # System/scripts/ git answers System/. The vault is its parent.
+            if root.name == "System" and (root.parent / "Maps & Manuals").is_dir():
+                return root.parent
+            return root
+
+    for parent in [here.parent, Path.cwd(), *here.parents]:
+        if (parent / "Maps & Manuals").is_dir():
             return parent
     return None
 
@@ -94,7 +124,8 @@ def check(vault: Path) -> list[str]:
     if not gitignore.exists():
         problems.append(
             "There is no .gitignore, so nothing is stopping a credential from being")
-        problems.append("committed. Fix: copy System/template/.gitignore into the vault.")
+        problems.append("committed. Fix: create one at the top of the vault containing:")
+        problems += [f"      {pat}" for pat in PATTERNS]
     else:
         body = gitignore.read_text(encoding="utf-8")
         missing = [pat for pat in PATTERNS if pat not in body]
