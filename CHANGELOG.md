@@ -10,6 +10,16 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.28 (2026-09-02)
+
+**Fixed**
+
+- **The line saying where `CLAUDE.md` and `AGENTS.md` came from is now visible, because a hidden one was getting the whole file thrown away.** Both files opened with a note, hidden from view, recording that they are built from `Me.md` and the shared rules. Agents that scan their instruction files for smuggled text treat a hidden note as exactly that, and the safe response to smuggled text is to discard the file. One agent did: it found the note, refused to load the file, and then ran the whole session with none of your rules. It did not know who you are, how you want to be written to, or which files it must never overwrite. Nothing was damaged and no file was changed, but for three sessions the rules simply were not there. The same note now appears as an ordinary visible line at the top of the file. It says the same thing, and being readable is the point: a scanner can see it is a note about the file rather than an instruction hidden inside it. The same change applies to every generated skill file and to the starter `AGENTS.md`.
+
+- **Nothing about this needs anything from you.** Run the update and the files are rewritten in the new shape. You will see one new line at the top of `CLAUDE.md`, `AGENTS.md` and each generated skill file, saying which note it was built from.
+
+---
+
 ## v2.27 (2026-09-01)
 
 **Added**

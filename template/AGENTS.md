@@ -1,6 +1,6 @@
 # AGENTS.md
 
-<!-- placeholder. `python3 System/scripts/build_views.py` overwrites this file -->
+> Placeholder. `python3 System/scripts/build_views.py` overwrites this file.
 
 Entry point for agents working in this vault. Identical in content to `CLAUDE.md`.
 
