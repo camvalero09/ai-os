@@ -62,6 +62,14 @@ def _find_vault_root() -> Path:
 VAULT = _find_vault_root()
 ATLAS_DIR = VAULT / "Ideaverse/Atlas"
 EFFORTS_DIR = VAULT / "Ideaverse/Efforts"
+# Records that describe the authoring repository itself (its plan, its
+# maintainer rules, its review artifacts), not the vault an installation
+# lives in. An installed checkout still carries them under System/, since the
+# whole repository is cloned there, but no vault note is ever meant to link
+# to them. Listed explicitly rather than inferred, so adding one is a
+# one-line decision instead of a heuristic that could also hide a real
+# orphaned note.
+AUTHORING_ONLY_RECORDS = {"IMPLEMENTATION_PLAN.md", "MAINTAINER_RULES.md", "T03_RULES_PROPOSAL.md"}
 BARE_WIKILINK_ALLOWLIST = {"AGENTS", "CLAUDE"}
 ALLOWED_STATUSES = {
     "raw", "draft", "active", "stable", "needs_review",
@@ -76,12 +84,17 @@ def get_all_md_files():
 
     Excludes the system's `template/` folder: those files exist only to seed a
     brand new vault, and counting them here would double every entry point and
-    report install-time scaffolding as orphaned notes.
+    report install-time scaffolding as orphaned notes. Excludes
+    AUTHORING_ONLY_RECORDS for the same reason: they describe the authoring
+    repository, not the vault, and an installed checkout has nowhere for a
+    vault note to link them from.
     """
     seed = SYSTEM / "template"
+    authoring_only = {SYSTEM / name for name in AUTHORING_ONLY_RECORDS}
     return [f for f in VAULT.rglob("*.md")
             if not IGNORED_DIR_NAMES.intersection(f.parts)
-            and seed not in f.parents]
+            and seed not in f.parents
+            and f not in authoring_only]
 
 
 def strip_code(content):
