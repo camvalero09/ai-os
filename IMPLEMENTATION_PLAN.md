@@ -99,7 +99,7 @@ Target after Release B is stable: `v2.31`.
 | T00 | A | Create this plan and evaluation scaffolding | Complete | Plan is model-neutral; 10-case fixture and validator pass 4 tests | This T00 checkpoint |
 | T01 | A | Add maintainer context for the System authoring repository | Complete | Canonical source generates identical Claude and AGENTS adapters; 3 focused tests and Hermes context load pass | This T01 checkpoint |
 | T02 | A | Record the `v2.28` conversational baseline | Complete | All 10 cases have fresh-session evidence; the release owner accepted the 16/20 reviewer score without adjustment | `4415f80` plus approval checkpoint |
-| T03 | A | Simplify shared conversation rules | Proposal awaiting approval | `T03_RULES_PROPOSAL.md` contains candidate wording; production `Agent Rules.md` is unchanged | |
+| T03 | A | Simplify shared conversation rules | Implementation checkpoint | Approved wording is implemented test-first; 7 focused and 14 total tests pass; disposable evaluation is deferred to conserve remaining model usage | Pending checkpoint commit |
 | T04 | A | Repair generated skill descriptions | Not started | Trigger-first descriptions fit the supported index budget and generated adapters remain reproducible | |
 | T05 | A | Remove structural contradictions | Not started | Reserved template names, duplicated Effort logs and style defaults, stale statements, duplicate dates, and push permission are resolved; existing personal cards are never overwritten | |
 | T06 | A | Run clean-install and `v2.28` upgrade simulations | Not started | Personal data survives; adapters rebuild; rollback works | |
@@ -175,6 +175,8 @@ The release owner approves separately:
 - 2026-09-03: raw Claude transcripts remain in Claude Code's local session store; checkpoint `4415f80` records session IDs, final responses, tool evidence, working-tree state, reported cost, and reviewer notes with human approval still false at that point.
 - 2026-09-03: the release owner accepted the 16/20 baseline assessment without adjustments. The run artifact now records human approval, closing T02.
 - 2026-09-03: a read-only independent review of the T03 proposal found three material ambiguities: external-search privacy scope, loss of `git commit -o` isolation, and an Agent Log trigger that could still require unconditional loading. All three were corrected; a separate preservation check restored Agent Log Section 2's explicit 90-day expiry. `Agent Rules.md` remains unchanged.
+- 2026-09-03: the release owner approved continuing with T03. Seven rule-contract tests were introduced one section at a time and each was observed failing before its corresponding rule change. All seven focused tests and all 14 repository unit tests now pass; the shared-rules privacy checker and diff check pass.
+- 2026-09-03: with 13% of the current model-usage allowance remaining, no candidate Claude evaluation was started. The implementation is checkpointed before disposable installation, adapter generation, behavior evaluation, and independent final review.
 
 ## Handover
 
@@ -190,10 +192,10 @@ The release owner approves separately:
 
 ### Unverified
 
-- No candidate vault conversation behavior has been implemented.
-- The T03 wording has not been approved or tested as production behavior.
+- The approved T03 wording is implemented in the authoring repository but has not been installed or evaluated in a disposable vault.
+- The four previously partial scenarios and the six safety regressions have not been rerun against the candidate.
 - The disposable setup was created and validated for baseline measurement, but the repeatable candidate install-and-upgrade command still belongs to T06.
 
 ### Exact next action
 
-Review `T03_RULES_PROPOSAL.md`. Do not edit `Agent Rules.md` until the release owner approves or adjusts the proposed wording.
+Resume from the T03 checkpoint. Confirm the branch and clean working tree, install the candidate into a disposable generic vault, regenerate its root adapters, run local checks, then rerun the four partial scenarios before spending usage on the six safety regressions.

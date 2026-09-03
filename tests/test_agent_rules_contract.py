@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+RULES = ROOT / "Agent Rules.md"
+
+
+def card() -> str:
+    text = RULES.read_text(encoding="utf-8")
+    return text.split("<!-- BEGIN CARD -->", 1)[1].split("<!-- END CARD -->", 1)[0]
+
+
+class AgentRulesContractTests(unittest.TestCase):
+    def test_response_structure_is_adaptive_and_questions_are_material(self):
+        text = card()
+        self.assertIn("Match the length, structure, and tone to the task", text)
+        self.assertIn("Do not add an ask merely to keep the conversation going", text)
+        self.assertNotIn("Three sentences per paragraph", text)
+        self.assertNotIn("A bold lead-in on every bullet", text)
+        self.assertNotIn("A header or list every two paragraphs", text)
+
+    def test_evidence_is_risk_based_without_weakening_source_inspection(self):
+        text = card()
+        self.assertIn("Inspect the relevant source before describing it", text)
+        self.assertIn("consequential, disputed, current, or externally published claims", text)
+        self.assertIn("Scope negative claims to what was actually searched", text)
+        self.assertNotIn("Quote it or say you cannot", text)
+
+    def test_action_rules_use_risk_and_preserve_privacy_and_append_only_data(self):
+        text = card()
+        self.assertIn("Proceed without confirmation for local, in-scope actions", text)
+        self.assertIn("external action, paid action, irreversible action", text)
+        self.assertIn("personal identifier in an external search query", text)
+        self.assertIn("Local searches confined to the vault", text)
+        self.assertIn("cleared after promotion or after 90 days", text)
+        self.assertNotIn("over five files", text)
+
+    def test_completion_requires_verification_without_forcing_status_labels(self):
+        text = card()
+        self.assertIn("Verify the changed result with the narrowest reliable check", text)
+        self.assertIn("Ordinary conversation does not require a status label", text)
+        self.assertIn("only when they block completion or require the owner's decision", text)
+        self.assertIn("After three failed attempts at the same approach", text)
+        self.assertNotIn("End in exactly one named state", text)
+
+    def test_checkpoints_handle_new_files_and_shared_index_races(self):
+        text = card()
+        self.assertIn("New files must be added by their exact paths", text)
+        self.assertIn("git commit -o -F <message file> -- <paths>", text)
+        self.assertIn("unrelated files staged by another session are excluded", text)
+        self.assertIn("If a checkpoint fails, preserve the changes", text)
+        self.assertIn("Push only when explicitly asked", text)
+        self.assertNotIn("git add -A", text)
+
+    def test_coordination_inspects_risk_without_treating_unknown_as_automatic_block(self):
+        text = card()
+        self.assertIn("Before editing, inspect the working tree", text)
+        self.assertIn("A missing heartbeat is not proof that the vault is clear", text)
+        self.assertIn("inspect its diff and provenance", text)
+        self.assertIn("reversible and non-overlapping", text)
+        self.assertIn("Do not load it for an unrelated self-contained question", text)
+        self.assertIn("only when the files, tests, or current context indicate prior trouble", text)
+        self.assertNotIn("unknown, never free: ask before editing it", text)
+
+    def test_root_rules_keep_procedures_and_personal_context_in_canonical_homes(self):
+        text = card()
+        self.assertIn("Rules state what to do. Procedures belong in skills", text)
+        self.assertIn("Add only context an agent could not reliably derive", text)
+        self.assertIn("Use full vault-relative wikilinks", text)
+        self.assertIn("Skill descriptions use third person", text)
+
+
+if __name__ == "__main__":
+    unittest.main()
