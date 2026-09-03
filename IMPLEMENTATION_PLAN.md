@@ -100,7 +100,7 @@ Target after Release B is stable: `v2.31`.
 | T01 | A | Add maintainer context for the System authoring repository | Complete | Canonical source generates identical Claude and AGENTS adapters; 3 focused tests and Hermes context load pass | This T01 checkpoint |
 | T02 | A | Record the `v2.28` conversational baseline | Complete | All 10 cases have fresh-session evidence; the release owner accepted the 16/20 reviewer score without adjustment | `4415f80` plus approval checkpoint |
 | T03 | A | Simplify shared conversation rules | Complete | Approved wording is implemented test-first; 14 tests pass; disposable generation, lint, acceptance, and 10 fresh Claude sessions completed; the release owner accepted 19/20 | `2d241a4`, `0e57dac`, plus approval checkpoint |
-| T04 | A | Repair generated skill descriptions | Not started | Trigger-first descriptions fit the supported index budget and generated adapters remain reproducible | |
+| T04 | A | Repair generated skill descriptions | Complete | Trigger-first descriptions fit the 60-character index window; descriptions are valid YAML/JSON scalars; missing triggers fail generation; 17 loaders per host are identical and reproducible | This T04 checkpoint |
 | T05 | A | Remove structural contradictions | Not started | Reserved template names, duplicated Effort logs and style defaults, stale statements, duplicate dates, and push permission are resolved; existing personal cards are never overwritten | |
 | T06 | A | Run clean-install and `v2.28` upgrade simulations | Not started | Personal data survives; adapters rebuild; rollback works | |
 | T07 | A | Canary and release decision | Not started | The release owner approves live canary and release separately; no agent self-publishes | |
@@ -183,6 +183,10 @@ The release owner approves separately:
 - 2026-09-03: the retained T03 candidate run completed all 10 cases in fresh Claude Sonnet 5 sessions with no process failures. Reviewer assessment was 19/20: the simple question, capture, and concurrency cases improved from partial to passing; the spelling edit remained partial because it still skipped collision inspection and post-edit verification; all six safety-focused regressions passed.
 - 2026-09-03: a fresh independent implementation review passed with no security concerns or logic errors. Its safeguard-test suggestions were applied by extending the contracts for installed-System immutability, owner-specific shared-rule exclusion, and full append-only behavior; all 14 tests remained green.
 - 2026-09-03: the release owner accepted the T03 candidate assessment at 19/20 without adjustments, closing T03.
+- 2026-09-03: T04 red state was observed: both focused loader tests failed because generated descriptions placed summaries before `Use when:`. The renderer now puts triggers first. Both focused tests and all 16 repository tests pass.
+- 2026-09-03: disposable T04 validation regenerated 17 loaders in each of `.claude/skills/` and `.agents/skills/`; the two host trees were identical, every description exposed `Use when:` inside the first 60 characters, generation was reproducible, vault lint passed 14 checks, and acceptance passed 18/18.
+- 2026-09-03: T04's first independent review found two blocking edge cases: unescaped backslashes could make the double-quoted YAML description invalid, and an exposed skill without triggers produced an unroutable `Use when: .` description. Each was reproduced with a failing test before the fix. Descriptions now use JSON quoting, which is valid YAML, and missing triggers stop generation with a clear error. All 18 tests and the disposable checks passed before fresh re-review.
+- 2026-09-03: T04's fresh fail-closed re-review passed with no security concerns or logic errors. The only non-blocking suggestion concerns a hypothetical future parser returning `None`; the current parser always returns strings, so it is not part of this bounded change.
 
 ## Handover
 
@@ -197,6 +201,7 @@ The release owner approves separately:
 - The release owner accepted the baseline scores, and a review-only T03 wording proposal was drafted without changing production behavior.
 - The approved T03 rules are implemented at `2d241a4`; disposable adapter generation and mechanical validation pass with the documented authoring-record fixture workaround.
 - All ten T03 candidate scenarios ran in fresh Claude Sonnet 5 sessions. The retained evidence and 19/20 reviewer assessment are in `evaluations/runs/2026-09-03-t03-candidate-claude-sonnet.json`.
+- T04's trigger-first loader implementation, edge-case fixes, disposable generation checks, and independent re-review pass.
 
 ### Unverified
 
@@ -205,4 +210,4 @@ The release owner approves separately:
 
 ### Exact next action
 
-Begin T04's test-first repair of generated skill descriptions. Do not install the candidate in the live vault, publish, tag, push, or merge without the later explicit gates.
+Begin T05's test-first removal of structural contradictions. Do not install the candidate in the live vault, publish, tag, push, or merge without the later explicit gates.

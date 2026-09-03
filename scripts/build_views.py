@@ -16,6 +16,7 @@ Usage:
     python3 scripts/build_views.py --check   # exit 1 if any view is out of date
 """
 
+import json
 import os
 import re
 import subprocess
@@ -407,10 +408,12 @@ def is_exposed(fm) -> bool:
 
 def render_loader(fm) -> str:
     name = fm.get("id", "")
-    desc = fm.get("summary", "").rstrip(".")
-    triggers = fm.get("triggers", "")
-    description = f"{desc}. Use when: {triggers}."
-    description = '"' + description.replace('"', '\\"') + '"'
+    desc = str(fm.get("summary", "")).rstrip(".")
+    triggers = str(fm.get("triggers", "")).strip()
+    if not triggers:
+        raise ValueError(f"skill {name or fm.get('_title', '<unknown>')} has no triggers")
+    description = f"Use when: {triggers}. {desc}."
+    description = json.dumps(description, ensure_ascii=False)
     return f"""---
 name: {name}
 description: {description}
