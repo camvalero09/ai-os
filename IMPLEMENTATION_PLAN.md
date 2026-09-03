@@ -99,7 +99,7 @@ Target after Release B is stable: `v2.31`.
 | T00 | A | Create this plan and evaluation scaffolding | Complete | Plan is model-neutral; 10-case fixture and validator pass 4 tests | This T00 checkpoint |
 | T01 | A | Add maintainer context for the System authoring repository | Complete | Canonical source generates identical Claude and AGENTS adapters; 3 focused tests and Hermes context load pass | This T01 checkpoint |
 | T02 | A | Record the `v2.28` conversational baseline | Complete | All 10 cases have fresh-session evidence; the release owner accepted the 16/20 reviewer score without adjustment | `4415f80` plus approval checkpoint |
-| T03 | A | Simplify shared conversation rules | Candidate evaluated; owner approval pending | Approved wording is implemented test-first; 14 tests pass; disposable generation, lint, acceptance, and 10 fresh Claude sessions completed; reviewer score is 19/20 | `2d241a4` plus pending evidence checkpoint |
+| T03 | A | Simplify shared conversation rules | Complete | Approved wording is implemented test-first; 14 tests pass; disposable generation, lint, acceptance, and 10 fresh Claude sessions completed; the release owner accepted 19/20 | `2d241a4`, `0e57dac`, plus approval checkpoint |
 | T04 | A | Repair generated skill descriptions | Not started | Trigger-first descriptions fit the supported index budget and generated adapters remain reproducible | |
 | T05 | A | Remove structural contradictions | Not started | Reserved template names, duplicated Effort logs and style defaults, stale statements, duplicate dates, and push permission are resolved; existing personal cards are never overwritten | |
 | T06 | A | Run clean-install and `v2.28` upgrade simulations | Not started | Personal data survives; adapters rebuild; rollback works | |
@@ -180,8 +180,9 @@ The release owner approves separately:
 - 2026-09-03: after the Claude allowance reset, the T03 candidate was installed into the generic disposable vault. Generated `CLAUDE.md` and `AGENTS.md` matched after normalizing their reciprocal filename references; build drift, 14 vault checks, and all 18 mechanical acceptance checks passed.
 - 2026-09-03: the exact candidate exposed a pre-existing release-structure issue: `IMPLEMENTATION_PLAN.md`, `MAINTAINER_RULES.md`, and `T03_RULES_PROPOSAL.md` are authoring-only records but appear as unlinked notes in an installed checkout. The disposable fixture linked them explicitly so T03 behavior could be measured without changing candidate rules. Production resolution remains assigned to T05.
 - 2026-09-03: an initial evaluation setup was discarded after Claude inherited a user-level MCP connector despite the fixture declaring no connectors. One case queried connected data before the problem was detected. Its run artifact was removed, the affected raw transcript was moved to Trash, and the retained evaluation used a strict empty MCP configuration, browser disabled, project auto-memory removed before each case, bounded local tools, and subprocess environment scrubbing. No retained result used an MCP tool or had a permission denial.
-- 2026-09-03: the retained T03 candidate run completed all 10 cases in fresh Claude Sonnet 5 sessions with no process failures. Reviewer assessment is 19/20: the simple question, capture, and concurrency cases improved from partial to passing; the spelling edit remained partial because it still skipped collision inspection and post-edit verification; all six safety-focused regressions passed. The release owner has not yet accepted or adjusted this score.
+- 2026-09-03: the retained T03 candidate run completed all 10 cases in fresh Claude Sonnet 5 sessions with no process failures. Reviewer assessment was 19/20: the simple question, capture, and concurrency cases improved from partial to passing; the spelling edit remained partial because it still skipped collision inspection and post-edit verification; all six safety-focused regressions passed.
 - 2026-09-03: a fresh independent implementation review passed with no security concerns or logic errors. Its safeguard-test suggestions were applied by extending the contracts for installed-System immutability, owner-specific shared-rule exclusion, and full append-only behavior; all 14 tests remained green.
+- 2026-09-03: the release owner accepted the T03 candidate assessment at 19/20 without adjustments, closing T03.
 
 ## Handover
 
@@ -199,10 +200,9 @@ The release owner approves separately:
 
 ### Unverified
 
-- The 19/20 candidate assessment has not yet been accepted or adjusted by the release owner.
 - The spelling-edit case still does not inspect session claims or verify the file after editing; lightweight enforcement is assigned to later session/bootstrap and post-edit work rather than adding more prose to T03.
 - The disposable setup was created and validated for baseline measurement, but the repeatable candidate install-and-upgrade command still belongs to T06.
 
 ### Exact next action
 
-Ask the release owner to accept or adjust the 19/20 T03 candidate assessment. After that decision, close T03 and begin T04's test-first repair of generated skill descriptions. Do not install the candidate in the live vault, publish, tag, push, or merge without the later explicit gates.
+Begin T04's test-first repair of generated skill descriptions. Do not install the candidate in the live vault, publish, tag, push, or merge without the later explicit gates.
