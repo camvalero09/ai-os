@@ -98,10 +98,10 @@ Target after Release B is stable: `v2.31`.
 |---|---|---|---|---|---|
 | T00 | A | Create this plan and evaluation scaffolding | Complete | Plan is model-neutral; 10-case fixture and validator pass 4 tests | This T00 checkpoint |
 | T01 | A | Add maintainer context for the System authoring repository | Complete | Canonical source generates identical Claude and AGENTS adapters; 3 focused tests and Hermes context load pass | This T01 checkpoint |
-| T02 | A | Record the `v2.28` conversational baseline | Awaiting human approval | All 10 cases have fresh-session evidence and reviewer scores (16/20); the release owner has not yet accepted or adjusted the scores | Pending approval checkpoint |
-| T03 | A | Simplify shared conversation rules | Not started | Routine answers are natural; high-risk safeguards and adopter customization remain | |
+| T02 | A | Record the `v2.28` conversational baseline | Complete | All 10 cases have fresh-session evidence; the release owner accepted the 16/20 reviewer score without adjustment | `4415f80` plus approval checkpoint |
+| T03 | A | Simplify shared conversation rules | Proposal awaiting approval | `T03_RULES_PROPOSAL.md` contains candidate wording; production `Agent Rules.md` is unchanged | |
 | T04 | A | Repair generated skill descriptions | Not started | Trigger-first descriptions fit the supported index budget and generated adapters remain reproducible | |
-| T05 | A | Remove structural contradictions | Not started | Reserved template names, duplicate Effort logs, stale statements, duplicate dates, and push permission are resolved with migration tests | |
+| T05 | A | Remove structural contradictions | Not started | Reserved template names, duplicated Effort logs and style defaults, stale statements, duplicate dates, and push permission are resolved; existing personal cards are never overwritten | |
 | T06 | A | Run clean-install and `v2.28` upgrade simulations | Not started | Personal data survives; adapters rebuild; rollback works | |
 | T07 | A | Canary and release decision | Not started | The release owner approves live canary and release separately; no agent self-publishes | |
 | T10 | B | Specify and test the session bootstrap contract | Not started | Bounded output; relevant current context; no full-note dumping or secrets | |
@@ -172,7 +172,9 @@ The release owner approves separately:
 - 2026-09-03: T02 ran all 10 cases as separate Claude Code 2.1.203 print sessions in a trusted disposable generic `v2.28` vault using Claude Sonnet 5 and bounded local tools. No real credentials, personal records, network connector, authoring repository, or live vault was available to the runs.
 - 2026-09-03: Claude reported an aggregate model-cost estimate of USD 2.3782 for the 10 baseline sessions. This is usage telemetry, not an assertion of an additional charge beyond the existing Claude Pro plan.
 - 2026-09-03: reviewer assessment is 16/20. Six cases met expectations without material correction; four were partial: the simple question asked an unnecessary follow-up and over-read context, the spelling edit skipped collision and post-edit verification, the concurrency case asked unnecessarily after inspecting a safe unclaimed change, and the capture case left verified edits uncommitted with no final response after a malformed commit command exhausted the turn limit.
-- 2026-09-03: raw Claude transcripts remain in Claude Code's local session store; the committed run artifact records session IDs, final responses, tool evidence, working-tree state, reported cost, and reviewer notes. Human approval remains explicitly false.
+- 2026-09-03: raw Claude transcripts remain in Claude Code's local session store; checkpoint `4415f80` records session IDs, final responses, tool evidence, working-tree state, reported cost, and reviewer notes with human approval still false at that point.
+- 2026-09-03: the release owner accepted the 16/20 baseline assessment without adjustments. The run artifact now records human approval, closing T02.
+- 2026-09-03: a read-only independent review of the T03 proposal found three material ambiguities: external-search privacy scope, loss of `git commit -o` isolation, and an Agent Log trigger that could still require unconditional loading. All three were corrected; a separate preservation check restored Agent Log Section 2's explicit 90-day expiry. `Agent Rules.md` remains unchanged.
 
 ## Handover
 
@@ -184,13 +186,14 @@ The release owner approves separately:
 - Fixture validator and regression tests added.
 - Canonical System maintainer rules and generated root adapters added.
 - All ten `v2.28` scenarios executed in isolated fresh Claude Code sessions; evidence and preliminary reviewer scores are in `evaluations/runs/2026-09-03-v2.28-claude-sonnet.json`.
+- The release owner accepted the baseline scores, and a review-only T03 wording proposal was drafted without changing production behavior.
 
 ### Unverified
 
-- The release owner has not yet accepted or adjusted the 16/20 reviewer assessment, so T02 is not complete.
 - No candidate vault conversation behavior has been implemented.
+- The T03 wording has not been approved or tested as production behavior.
 - The disposable setup was created and validated for baseline measurement, but the repeatable candidate install-and-upgrade command still belongs to T06.
 
 ### Exact next action
 
-Ask the release owner to accept or adjust the four partial baseline judgments. After human approval, mark T02 complete and start T03 by drafting the proposed shared-rule wording for approval before implementing it test-first.
+Review `T03_RULES_PROPOSAL.md`. Do not edit `Agent Rules.md` until the release owner approves or adjusts the proposed wording.
