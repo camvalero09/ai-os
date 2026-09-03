@@ -4,7 +4,7 @@
 
 ## Objective
 
-Make an installed AI OS vault feel informed, decisive, safe, and continuous when its owner talks to an agent through VS Code. Improve the experience for Camilo and other adopters without requiring one model, one provider, one subscription, or one uninterrupted session.
+Make an installed AI OS vault feel informed, decisive, safe, and continuous when its owner talks to an agent through VS Code. Improve the experience for the current owner and other adopters without requiring one model, one provider, one subscription, or one uninterrupted session.
 
 ## Current baseline
 
@@ -30,14 +30,14 @@ Make an installed AI OS vault feel informed, decisive, safe, and continuous when
 - Never hand-edit generated agent adapters.
 - Never alter an adopter's `Me.md`, notes, credentials, or current work during an update.
 - Keep rollback to the previous immutable version possible.
-- Never tag, push, publish, or install a candidate in a live vault without Camilo's explicit approval.
+- Never tag, push, publish, or install a candidate in a live vault without the release owner's explicit approval.
 - Run behavior-changing work test-first where automated tests are possible.
 - Verify subagent or predecessor claims against files, git, and test output.
 - One editing agent per checkout. Parallel editors require separate worktrees and non-overlapping scopes.
 
 ## Working protocol
 
-Each agent session takes exactly one task ID unless Camilo explicitly expands the scope.
+Each agent session takes exactly one task ID unless the release owner explicitly expands the scope.
 
 Before editing:
 
@@ -96,14 +96,14 @@ Target after Release B is stable: `v2.31`.
 
 | ID | Release | Task | Status | Acceptance summary | Commit |
 |---|---|---|---|---|---|
-| T00 | A | Create this plan and evaluation scaffolding | Complete | Plan is model-neutral; 10-case fixture and validator pass 3 tests | This T00 checkpoint |
+| T00 | A | Create this plan and evaluation scaffolding | Complete | Plan is model-neutral; 10-case fixture and validator pass 4 tests | This T00 checkpoint |
 | T01 | A | Add maintainer context for the System authoring repository | Complete | Canonical source generates identical Claude and AGENTS adapters; 3 focused tests and Hermes context load pass | This T01 checkpoint |
-| T02 | A | Record the `v2.28` conversational baseline | Not started | Every evaluation case has observed evidence and a human score; no invented passes | |
+| T02 | A | Record the `v2.28` conversational baseline | Awaiting human approval | All 10 cases have fresh-session evidence and reviewer scores (16/20); the release owner has not yet accepted or adjusted the scores | Pending approval checkpoint |
 | T03 | A | Simplify shared conversation rules | Not started | Routine answers are natural; high-risk safeguards and adopter customization remain | |
 | T04 | A | Repair generated skill descriptions | Not started | Trigger-first descriptions fit the supported index budget and generated adapters remain reproducible | |
 | T05 | A | Remove structural contradictions | Not started | Reserved template names, duplicate Effort logs, stale statements, duplicate dates, and push permission are resolved with migration tests | |
 | T06 | A | Run clean-install and `v2.28` upgrade simulations | Not started | Personal data survives; adapters rebuild; rollback works | |
-| T07 | A | Canary and release decision | Not started | Camilo approves live canary and release separately; no agent self-publishes | |
+| T07 | A | Canary and release decision | Not started | The release owner approves live canary and release separately; no agent self-publishes | |
 | T10 | B | Specify and test the session bootstrap contract | Not started | Bounded output; relevant current context; no full-note dumping or secrets | |
 | T11 | B | Implement session bootstrap and hook | Not started | Fresh VS Code session receives the brief once and can route correctly | |
 | T12 | B | Add controlled learning workflow | Not started | Durable facts route to one canonical home; temporary details are dropped | |
@@ -151,7 +151,7 @@ A disposable installation starting at `v2.28` must update to the candidate witho
 
 ### Human gates
 
-Camilo approves separately:
+The release owner approves separately:
 
 1. Final shared-rule wording.
 2. Information automatically included in the session bootstrap.
@@ -162,13 +162,17 @@ Camilo approves separately:
 
 ## Evidence log
 
-- 2026-09-02: authoring repository was clean on `main`, synchronized with `origin/main`, at `v2.28` before creating `improve/conversation-harness`.
-- 2026-09-02: the installed System copy was a clean detached checkout at `v2.28`.
-- 2026-09-02: current acceptance testing explicitly says actual agent behavior remains a manual fresh-session test; this plan adds structured cases without claiming they are automatically executed.
-- 2026-09-02: TDD red state observed: all three fixture tests failed because `scripts/conversation_evals.py` did not exist.
-- 2026-09-02: T00 green state verified: three unit tests passed and the validator accepted all ten required scenario types. No agent behavior has been run or scored.
-- 2026-09-02: T01 red state observed: all three maintainer-context tests failed because the generator did not exist.
-- 2026-09-02: T01 green state verified: three focused tests passed, both adapters were generated identically, the drift check passed, and Hermes loaded the authoring context without scanner blocking.
+- 2026-09-03: authoring repository was clean on `main`, synchronized with `origin/main`, at `v2.28` before creating `improve/conversation-harness`.
+- 2026-09-03: the installed System copy was a clean detached checkout at `v2.28`.
+- 2026-09-03: current acceptance testing explicitly says actual agent behavior remains a manual fresh-session test; this plan adds structured cases without claiming they are automatically executed.
+- 2026-09-03: TDD red state observed: all three fixture tests failed because `scripts/conversation_evals.py` did not exist.
+- 2026-09-03: T00 green state initially passed three tests; T02 added a fourth test requiring reproducible evaluation context for every case. The validator accepts all ten scenario types.
+- 2026-09-03: T01 red state observed: all three maintainer-context tests failed because the generator did not exist.
+- 2026-09-03: T01 green state verified: three focused tests passed, both adapters were generated identically, the drift check passed, and Hermes loaded the authoring context without scanner blocking.
+- 2026-09-03: T02 ran all 10 cases as separate Claude Code 2.1.203 print sessions in a trusted disposable generic `v2.28` vault using Claude Sonnet 5 and bounded local tools. No real credentials, personal records, network connector, authoring repository, or live vault was available to the runs.
+- 2026-09-03: Claude reported an aggregate model-cost estimate of USD 2.3782 for the 10 baseline sessions. This is usage telemetry, not an assertion of an additional charge beyond the existing Claude Pro plan.
+- 2026-09-03: reviewer assessment is 16/20. Six cases met expectations without material correction; four were partial: the simple question asked an unnecessary follow-up and over-read context, the spelling edit skipped collision and post-edit verification, the concurrency case asked unnecessarily after inspecting a safe unclaimed change, and the capture case left verified edits uncommitted with no final response after a malformed commit command exhausted the turn limit.
+- 2026-09-03: raw Claude transcripts remain in Claude Code's local session store; the committed run artifact records session IDs, final responses, tool evidence, working-tree state, reported cost, and reviewer notes. Human approval remains explicitly false.
 
 ## Handover
 
@@ -179,13 +183,14 @@ Camilo approves separately:
 - Ten baseline conversation scenarios defined in `evaluations/conversation_cases.json`.
 - Fixture validator and regression tests added.
 - Canonical System maintainer rules and generated root adapters added.
+- All ten `v2.28` scenarios executed in isolated fresh Claude Code sessions; evidence and preliminary reviewer scores are in `evaluations/runs/2026-09-03-v2.28-claude-sonnet.json`.
 
 ### Unverified
 
+- The release owner has not yet accepted or adjusted the 16/20 reviewer assessment, so T02 is not complete.
 - No candidate vault conversation behavior has been implemented.
-- No conversational baseline has been run.
-- No disposable-install command has been established for this branch.
+- The disposable setup was created and validated for baseline measurement, but the repeatable candidate install-and-upgrade command still belongs to T06.
 
 ### Exact next action
 
-Start T02: create a disposable generic vault at `v2.28`, run each evaluation case in a fresh Claude Code session with bounded tools, preserve raw outputs separately from expectations, and record evidence without changing the live vault.
+Ask the release owner to accept or adjust the four partial baseline judgments. After human approval, mark T02 complete and start T03 by drafting the proposed shared-rule wording for approval before implementing it test-first.

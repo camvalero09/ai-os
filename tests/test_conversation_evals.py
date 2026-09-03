@@ -52,6 +52,7 @@ class ConversationEvaluationFixtureTests(unittest.TestCase):
                 "id": "bad-observation",
                 "scenario_type": "simple_question",
                 "prompt": "Where does this belong?",
+                "evaluation_context": "No extra setup.",
                 "expected": {"asks_user": False},
                 "observed": {"passed": True},
             }],
@@ -60,6 +61,22 @@ class ConversationEvaluationFixtureTests(unittest.TestCase):
         errors = module.validate_fixture(payload, require_coverage=False)
 
         self.assertTrue(any("observed" in error for error in errors))
+
+    def test_missing_evaluation_context_is_rejected(self):
+        module = load_module()
+        payload = {
+            "version": 1,
+            "cases": [{
+                "id": "missing-context",
+                "scenario_type": "simple_question",
+                "prompt": "Where does this belong?",
+                "expected": {"asks_user": False},
+            }],
+        }
+
+        errors = module.validate_fixture(payload, require_coverage=False)
+
+        self.assertTrue(any("evaluation_context" in error for error in errors))
 
 
 if __name__ == "__main__":

@@ -60,6 +60,9 @@ def validate_fixture(payload: Any, *, require_coverage: bool = True) -> list[str
         prompt = case.get("prompt")
         if not isinstance(prompt, str) or not prompt.strip():
             errors.append(f"{label} needs a non-empty prompt")
+        evaluation_context = case.get("evaluation_context")
+        if not isinstance(evaluation_context, str) or not evaluation_context.strip():
+            errors.append(f"{label} needs a non-empty evaluation_context")
         expected = case.get("expected")
         if not isinstance(expected, dict) or not expected:
             errors.append(f"{label} needs a non-empty expected object")
