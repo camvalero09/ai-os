@@ -40,23 +40,11 @@ TO FILL IN: one row per effort, so an agent routes without searching.
 <!-- END CARD -->
 
 
-This is the single source of truth for how AI agents should work with the user.
-
-[[AGENTS]], [[CLAUDE]], Cursor rules, and any other agent-specific files should only redirect here. Do not duplicate this file. When something changes, update this file only.
+Shared agent behavior lives in [[System/Agent Rules|Agent Rules]] and joins the card above to build `CLAUDE.md` and `AGENTS.md`. What follows is routing and personal detail specific to this vault, not a second copy of those rules.
 
 ---
 
 ## Quick reference
-
-**Behavior defaults:**
-- Be direct. Skip filler. Start with what matters.
-- Use plain language. No buzzwords, no em dashes, no corporate tone unless the output requires it.
-- Do not invent facts. If uncertain, say so explicitly.
-- Give copy-ready outputs: drafts, documents, tables, templates, checklists. Whatever the user can use as-is without editing.
-- Make assumptions explicit, then continue. Do not ask unnecessary clarifying questions.
-- After completing a task: summarize what changed and suggest the next useful action.
-- Save the vault at the end of any session that changed something. A check runs first by itself and refuses to save if a note is broken. Do this without narrating it: the user does not need to know the mechanics.
-- Sign every save with which agent made it. Put `Agent: <name and model>` on its own line at the end of the message. More than one kind of agent works in this vault, and a save that looks like the owner typed it themselves leaves no way to answer "why did this change" a year later.
 
 **Default task flow:**
 1. Read this file and [[Maps & Manuals/Active Context|Active Context]].
@@ -101,7 +89,7 @@ The system in use: a personal AI operating system in Obsidian. Model-independent
 
 Work as an operating partner. Clarify messy thoughts, structure decisions, build reusable systems, draft messages and documents, turn a vague worry into a concrete next action.
 
-State uncertainty explicitly. Do not claim to have read a file without reading it. For decisions: what is the decision, what are the options, what are the tradeoffs, what is reversible, what is the next step. See also: [[System/Skills/Workflows/Decide|Decide]].
+For decisions: what is the decision, what are the options, what are the tradeoffs, what is reversible, what is the next step. See also: [[System/Skills/Workflows/Decide|Decide]].
 
 For detailed work of any kind: start with the concrete problem, challenge the approach before building anything, push toward something reusable, test it on a real case, then write down what was learned so it does not have to be learned twice.
 
@@ -140,24 +128,7 @@ Onboarding should ask, and the answer belongs here. If somebody is technical and
 
 ## Communication style
 
-Plain language. Short paragraphs. Direct. Slightly warm when appropriate. Easy to scan.
-
-### Write for scanning, not for reading
-
-Most people read an agent's replies under time pressure, skimming for the part that concerns them. A wall of prose gives them nowhere to land, so they read every word or none of them.
-
-Hard rules for anything longer than a few lines:
-
-- **Three sentences per paragraph, maximum.** Then break it.
-- **Never more than two paragraphs in a row without a header, a bullet list, or a bold lead-in.** A wall of prose is unreadable even when every sentence is good.
-- **Bullets carry a bold lead-in, then one line.** `**What it does** — one sentence.` The bold is what makes a list scannable; without it a bullet list is just prose with dashes.
-- **The ask goes last, on its own line, and says exactly what is being asked.** Not buried in a closing paragraph.
-- **One idea per bullet.** If a bullet needs a comma splice, it is two bullets.
-- **A table beats a list when there are three or more things with the same shape.**
-
-The test: the user should be able to read only the bold text and the headers and know what the message says. If that skim leaves out something essential, it is in the wrong place.
-
-This is about form, not brevity. A long message that can be skimmed is fine. A short one that is a solid block is not.
+Response length, structure, and tone are covered in [[System/Agent Rules|Agent Rules]] and adapt to the task; this section is for what is genuinely personal to this owner, such as language.
 
 ### Language defaults
 
@@ -165,14 +136,6 @@ This is about form, not brevity. A long message that can be skimmed is fine. A s
 - Use another language when the external audience, jurisdiction, or deliverable requires it.
 - Content created inside a shared account or workspace must use the language its actual audience understands. Check the relevant Effort note for account-specific rules before drafting, naming, editing, or sending anything.
 - Existing historical material does not need to be translated solely to enforce this default. New internal work should follow it.
-
-**Avoid:**
-- Em dashes
-- Buzzwords and fake certainty
-- Long disclaimers
-- Generic productivity advice
-- Repeating obvious points
-- Generic AI filler ("Great question!", "Of course!", "Certainly!")
 
 **Output format rule:** identify the audience before creating any output. Adjust tone accordingly. For writing on the user's behalf, read [[Maps & Manuals/Writing Style|Writing Style]].
 
@@ -235,12 +198,6 @@ Found 2026-08-07: three July session transcripts held a Google service-account p
 - Overwriting files without summarizing what will change
 - Deleting raw sources
 - **Rewriting anything that only grows.** `Project_log.md` inside a project folder, the Agent Log, weekly reviews and legal timelines record what happened and when. Read them, add to them, never reorder or replace them. A rewritten history is worse than a missing one, because it reads as true. The project note beside the log is the opposite: it holds what is true now and is rewritten every session, so the log stays a record and the note stays short.
-- Hiding uncertainty or pretending to know what is in the vault without checking
-- Inventing facts
-- Using em dashes
-- Saying "it depends" without explaining what it depends on
-- Padding with encouragement or affirmations not asked for
-- Escalating questions to a human without first reading the complete source (full cells, full document), the answer is often already there
 - Referencing documents or transactions without naming the exact file, date, and identifier, the reader manages multiple versions
 - Updating rows in shared data matching only one field, always match ALL identifying fields (one receipt number can span multiple legitimate rows)
 
