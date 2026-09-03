@@ -579,5 +579,5 @@
     "subprocess_environment_scrubbed": true,
     "external_network_allowed_by_fixture": false
   },
-  "discarded_setup_note": "Earlier setup attempts were discarded and are not scored. One attempt exposed user-level MCP connectors despite the generic no-connector fixture; the retained run uses a strict empty MCP configuration. The affected discarded run artifact was removed, and its raw transcript was moved to Trash."
+  "discarded_setup_note": "Earlier setup attempts were discarded and are not scored. One attempt exposed user-level MCP connectors despite the generic no-connector fixture; the retained run uses a strict empty MCP configuration. The affected discarded run artifact was removed, and its raw transcript was permanently deleted at the release owner's request."
 }
