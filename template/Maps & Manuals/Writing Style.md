@@ -1,12 +1,3 @@
----
-id: writing-style
-type: reference
-status: draft
-domain: meta
-updated: 2026-08-04
-summary: "How this vault's owner actually writes, so agents can draft in their voice rather than a generic one. Empty until onboarding fills it in from their own sent mail."
----
-
 # Writing Style
 
 > **This file is empty on purpose, and that is safer than filling it in.**

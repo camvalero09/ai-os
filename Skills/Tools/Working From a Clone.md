@@ -38,7 +38,7 @@ python3 System/scripts/build_views.py
 
 ## Your work only reaches Camilo by being pushed
 
-There is no shared filesystem between here and his laptop. An edit that is never committed and pushed did not happen. Close with [[System/Skills/Workflows/Session Handover|Session Handover]] and push, or say clearly that you did not.
+There is no shared filesystem between here and his laptop. An edit that is never committed and pushed did not happen. Close with [[System/Skills/Workflows/Session Handover|Session Handover]], and push only when Camilo has asked for it; otherwise say clearly that the work is committed but not pushed.
 
 ## One drift to expect
 

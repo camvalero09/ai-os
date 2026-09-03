@@ -44,33 +44,6 @@ Shared agent behavior lives in [[System/Agent Rules|Agent Rules]] and joins the 
 
 ---
 
-## Quick reference
-
-**Default task flow:**
-1. Read this file and [[Maps & Manuals/Active Context|Active Context]].
-2. Identify the task type and go directly to the relevant file.
-3. Use the most relevant workflow from [[Maps & Manuals/Skill Map|Skill Map]] if a structured process is needed.
-4. Create or update only what is necessary.
-5. Summarize what changed. Suggest the next useful action.
-
-**Task routing:** see [[Maps & Manuals/Active Context|Active Context]] for what is active. See [[Maps & Manuals/Vault Map|Vault Map]] for where things live.
-**Available workflows:** see [[Maps & Manuals/Skill Map|Skill Map]].
-**Domain guidance:** none yet. As efforts and Atlas notes are created, link the important ones here so agents find them without searching.
-**Writing on the user's behalf:** always read [[Maps & Manuals/Writing Style|Writing Style]] before drafting anything other people will read.
-
-**Default task prompt format:**
-```
-TASK FOR SYSTEM
-Title: [Short task name]
-Type: [Capture / Process Source / Start Effort / Review Effort / Create Output / Update Memory / Decide]
-Context: [What the agent needs to know]
-Desired outcome: [What should exist after the task]
-Constraints: [Any limits, style, deadline, or format]
-```
-If I do not use this format, infer it from context.
-
----
-
 ## Who I am
 
 > **Not filled in yet.** This section is written during onboarding, in conversation. An agent reading a vault where this is still blank should offer to fill it in before doing substantial work, because almost every other rule in this file depends on knowing who the user is.
@@ -172,7 +145,7 @@ python3 System/scripts/build_views.py
 
 **`vault.config.json` is absent**, so the vault has no identity file. Take identity from this note, not from config.
 
-**Your work reaches the owner by being pushed.** There is no shared filesystem between here and his laptop. An edit that is never committed and pushed did not happen. Close the session properly with [[System/Skills/Workflows/Session Handover|Session Handover]] and push, or say clearly that you did not.
+**Your work reaches the owner only by being pushed.** There is no shared filesystem between here and his laptop. An edit that is never committed and pushed did not happen. Close the session properly with [[System/Skills/Workflows/Session Handover|Session Handover]], and push only when the owner has asked for it; otherwise say clearly that the work is committed but not pushed.
 
 **One drift to expect.** The owner's laptop runs a pinned version tag while the clone above takes the newest. If a skill behaves differently from how he describes it, that gap is the likely reason, and it is worth naming rather than working around.
 
@@ -197,7 +170,7 @@ Found 2026-08-07: three July session transcripts held a Google service-account p
 - Creating duplicate notes
 - Overwriting files without summarizing what will change
 - Deleting raw sources
-- **Rewriting anything that only grows.** `Project_log.md` inside a project folder, the Agent Log, weekly reviews and legal timelines record what happened and when. Read them, add to them, never reorder or replace them. A rewritten history is worse than a missing one, because it reads as true. The project note beside the log is the opposite: it holds what is true now and is rewritten every session, so the log stays a record and the note stays short.
+- **Rewriting anything that only grows.** `Project_log.md` inside a project folder when it has one (see [[System/Skills/Workflows/Start New Effort|Start New Effort]] for when one is created), the Agent Log, weekly reviews and legal timelines record what happened and when. Read them, add to them, never reorder or replace them. A rewritten history is worse than a missing one, because it reads as true. The effort note beside the log is the opposite: it holds what is true now and is rewritten as the work changes, so the log stays a record and the note stays short.
 - Referencing documents or transactions without naming the exact file, date, and identifier, the reader manages multiple versions
 - Updating rows in shared data matching only one field, always match ALL identifying fields (one receipt number can span multiple legitimate rows)
 

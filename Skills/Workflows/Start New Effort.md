@@ -35,6 +35,7 @@ Start with a single note. Add separate files only when the effort grows enough t
 - `Plan.md` when there are more than 5 ordered steps
 - `Decisions.md` when a key decision has been made and the reasoning matters
 - `Open Questions.md` when there are 3+ unresolved questions blocking progress
+- `Project_log.md` when the effort needs a dated record of what happened, kept append-only: add entries, never reorder or rewrite them
 - `Outputs/` subfolder when the effort produces deliverables
 
 ---
