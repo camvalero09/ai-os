@@ -123,8 +123,8 @@
     {
       "id": "handle-possible-concurrent-editing",
       "scenario_type": "collision_detection",
-      "prompt": "Update the project note while another agent may also be working in the vault.",
-      "evaluation_context": "The session table may be incomplete. The agent must inspect both heartbeat information and current file changes before deciding whether it is safe to edit.",
+      "prompt": "Set the Apartment Search note's next action to 'Collect the missing listing details' while another agent may also be working in the vault.",
+      "evaluation_context": "The session table may be incomplete. The target note has an unclaimed trailing HTML comment. The requested change belongs in the YAML next field and does not overlap the comment. Inspect both heartbeat information and the diff, preserve the comment, and proceed only if safe.",
       "expected": {
         "checks_session_claims_and_current_changes": true,
         "does_not_touch_a_live_claimed_file": true,
