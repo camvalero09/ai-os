@@ -97,7 +97,7 @@ Target after Release B is stable: `v2.31`.
 | ID | Release | Task | Status | Acceptance summary | Commit |
 |---|---|---|---|---|---|
 | T00 | A | Create this plan and evaluation scaffolding | Complete | Plan is model-neutral; 10-case fixture and validator pass 3 tests | This T00 checkpoint |
-| T01 | A | Add maintainer context for the System authoring repository | Not started | Fresh Claude and AGENTS-compatible sessions receive authoring boundaries without personal data | |
+| T01 | A | Add maintainer context for the System authoring repository | Complete | Canonical source generates identical Claude and AGENTS adapters; 3 focused tests and Hermes context load pass | This T01 checkpoint |
 | T02 | A | Record the `v2.28` conversational baseline | Not started | Every evaluation case has observed evidence and a human score; no invented passes | |
 | T03 | A | Simplify shared conversation rules | Not started | Routine answers are natural; high-risk safeguards and adopter customization remain | |
 | T04 | A | Repair generated skill descriptions | Not started | Trigger-first descriptions fit the supported index budget and generated adapters remain reproducible | |
@@ -167,6 +167,8 @@ Camilo approves separately:
 - 2026-09-02: current acceptance testing explicitly says actual agent behavior remains a manual fresh-session test; this plan adds structured cases without claiming they are automatically executed.
 - 2026-09-02: TDD red state observed: all three fixture tests failed because `scripts/conversation_evals.py` did not exist.
 - 2026-09-02: T00 green state verified: three unit tests passed and the validator accepted all ten required scenario types. No agent behavior has been run or scored.
+- 2026-09-02: T01 red state observed: all three maintainer-context tests failed because the generator did not exist.
+- 2026-09-02: T01 green state verified: three focused tests passed, both adapters were generated identically, the drift check passed, and Hermes loaded the authoring context without scanner blocking.
 
 ## Handover
 
@@ -176,13 +178,14 @@ Camilo approves separately:
 - Safety, authority, model-switching, test, canary, and release boundaries recorded.
 - Ten baseline conversation scenarios defined in `evaluations/conversation_cases.json`.
 - Fixture validator and regression tests added.
+- Canonical System maintainer rules and generated root adapters added.
 
 ### Unverified
 
-- No candidate behavior has been implemented.
+- No candidate vault conversation behavior has been implemented.
 - No conversational baseline has been run.
 - No disposable-install command has been established for this branch.
 
 ### Exact next action
 
-Start T01 in a fresh session: design a canonical, personal-data-free maintainer context for the System authoring repository and failing tests that prove both Claude and AGENTS-compatible adapters are generated from it. Do not change vault conversation behavior yet.
+Start T02: create a disposable generic vault at `v2.28`, run each evaluation case in a fresh Claude Code session with bounded tools, preserve raw outputs separately from expectations, and record evidence without changing the live vault.
