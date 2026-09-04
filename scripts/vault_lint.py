@@ -79,6 +79,12 @@ STALE_DAYS = 30
 IGNORED_DIR_NAMES = {".git", ".obsidian", "node_modules"}
 
 
+def is_host_managed_worktree(path: Path) -> bool:
+    """Whether a path belongs to a host's separate working copy."""
+    roots = (VAULT / ".claude/worktrees", VAULT / ".agents/worktrees")
+    return any(root == path or root in path.parents for root in roots)
+
+
 def get_all_md_files():
     """Every live note in this vault.
 
@@ -93,11 +99,10 @@ def get_all_md_files():
     """
     seed = SYSTEM / "template"
     authoring_only = {SYSTEM / name for name in AUTHORING_ONLY_RECORDS}
-    runtime_worktrees = {VAULT / ".claude/worktrees", VAULT / ".agents/worktrees"}
     return [f for f in VAULT.rglob("*.md")
             if not IGNORED_DIR_NAMES.intersection(f.parts)
             and seed not in f.parents
-            and not runtime_worktrees.intersection(f.parents)
+            and not is_host_managed_worktree(f)
             and f not in authoring_only]
 
 
@@ -253,7 +258,9 @@ def check_stray_instruction_files():
     }
     problems = []
     for path in VAULT.rglob("*"):
-        if IGNORED_DIR_NAMES.intersection(path.parts) or not path.is_file():
+        if (IGNORED_DIR_NAMES.intersection(path.parts)
+                or is_host_managed_worktree(path)
+                or not path.is_file()):
             continue
         # System/ is the shared system's own repository and carries its own
         # entry points legitimately. It is read-only here and updated by tag.

@@ -30,9 +30,12 @@ class RuntimeWorktreeExclusionTests(unittest.TestCase):
             live_note.write_text("# Live Note\n", encoding="utf-8")
 
             for host_root in (".claude", ".agents"):
-                duplicate = vault / host_root / "worktrees/task-copy/Ideaverse/Atlas/Duplicate.md"
+                worktree = vault / host_root / "worktrees/task-copy"
+                duplicate = worktree / "Ideaverse/Atlas/Duplicate.md"
                 duplicate.parent.mkdir(parents=True)
                 duplicate.write_text("# Duplicate\n", encoding="utf-8")
+                (worktree / "CLAUDE.md").write_text("# Worktree entry\n", encoding="utf-8")
+                (worktree / "AGENTS.md").write_text("# Worktree entry\n", encoding="utf-8")
 
             setattr(module, "VAULT", vault)
             setattr(module, "SYSTEM", system)
@@ -42,6 +45,11 @@ class RuntimeWorktreeExclusionTests(unittest.TestCase):
             self.assertFalse(
                 any("/worktrees/" in f"/{rel}/" for rel in rels),
                 "host-managed worktree copies must not be linted as live vault notes",
+            )
+            self.assertEqual(
+                [],
+                module.check_stray_instruction_files(),
+                "instruction files inside host-managed worktrees are not stray live-vault instructions",
             )
 
 
