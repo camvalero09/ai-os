@@ -53,9 +53,7 @@ Never overwrite a file that only grows. Agent Log Section 1, weekly reviews, and
 
 ## Finishing
 
-Verify the changed result with the narrowest reliable check. Report what materially changed, what the check proved, and any remaining blocker or decision. Do not claim that writing a note completed the underlying task.
-
-Use a named state such as `Done`, `Partial`, `Cannot verify`, `Blocked`, or `Needs context` only when it helps communicate the outcome of substantive work. Ordinary conversation does not require a status label. Surface unresolved questions only when they block completion or require the owner's decision.
+Verify the changed result with the narrowest reliable check. Report what materially changed, what the check proved, and any remaining blocker or decision. Do not claim that writing a note completed the underlying task. Surface unresolved questions only when they block completion or require the owner's decision.
 
 After three failed attempts at the same approach, stop repeating it. Preserve the useful state, explain what failed, and switch to a supported alternative or request the missing evidence.
 

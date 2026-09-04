@@ -421,11 +421,9 @@ description: {description}
 
 # {fm['_title']} (loader)
 
-> This file is {LOADER_MARK} from "{fm['_rel_md']}". Edit that note, not this file.
+> This file is {LOADER_MARK} from "{fm['_rel_md']}". Edit that note.
 
-**Read and apply `{fm['_rel_md']}`** (relative to the vault root). Do not proceed with the task until you have read it. That note is the canonical version; this loader only routes to it.
-
-This skill stacks with Me.md and Active Context; on conflict, Me.md wins.
+Read `{fm['_rel_md']}` and apply it. On conflict, Me.md wins.
 """
 
 

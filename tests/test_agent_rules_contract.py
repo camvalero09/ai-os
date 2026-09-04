@@ -49,10 +49,10 @@ class AgentRulesContractTests(unittest.TestCase):
     def test_completion_requires_verification_without_forcing_status_labels(self):
         text = card()
         self.assertIn("Verify the changed result with the narrowest reliable check", text)
-        self.assertIn("Ordinary conversation does not require a status label", text)
         self.assertIn("only when they block completion or require the owner's decision", text)
         self.assertIn("After three failed attempts at the same approach", text)
         self.assertNotIn("End in exactly one named state", text)
+        self.assertNotIn("Cannot verify", text)
 
     def test_checkpoints_handle_new_files_and_shared_index_races(self):
         text = card()
