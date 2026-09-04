@@ -22,6 +22,10 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 - **`sessions.py --all`** prints the old full history, every heartbeat with its last commit. Nothing was lost, it just stopped being what a session opens with.
 
+**Also**
+
+- **The release gate no longer fails a version that only changes a script.** It proved regeneration had happened by checking that the generated files came out *different* from the previous version's. That works when a release edits your rules, and is wrong when it edits a script: the correct outcome there is files that are byte-for-byte identical. This release was one, so the gate blocked it. It now asks the question that actually matters, whether anything is out of date, which is the same check that runs in your vault.
+
 ---
 
 ## v2.29 (2026-09-05)

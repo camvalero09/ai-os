@@ -124,6 +124,21 @@ def verify_adapters(vault: Path) -> bool:
     return True
 
 
+def generated_artifacts_current(vault: Path) -> bool:
+    """Regeneration produced output matching the installed System.
+
+    Sameness against the baseline is the wrong question: a release that
+    changes only a script leaves every adapter and loader byte-identical,
+    which is correct. What must hold is that nothing is stale.
+    """
+    system = vault / "System"
+    try:
+        run([sys.executable, str(system / "scripts/build_views.py"), "--check"], cwd=vault)
+    except SimulationError:
+        return False
+    return True
+
+
 def validate_vault(vault: Path) -> None:
     python = sys.executable
     system = vault / "System"
@@ -244,15 +259,19 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
     shutil.copy2(system / "claude-settings.json", vault / ".claude/settings.json")
     validate_vault(vault)
     personal_after_upgrade = fingerprint(personal_paths)
-    candidate_entries = generated_entries(vault)
     candidate_skill_loaders = generated_skill_loaders(vault)
     candidate_portable_skill_loaders = generated_skill_loaders(vault, ".agents/skills")
     credential_permissions_after_upgrade = (personal_paths[-1].stat().st_mode & 0o777) == credential_mode_before
-    skill_loaders_rebuilt = candidate_skill_loaders != baseline_skill_loaders
-    portable_skill_loaders_rebuilt = candidate_portable_skill_loaders != baseline_portable_skill_loaders
+    artifacts_current = generated_artifacts_current(vault)
+    skill_loaders_rebuilt = artifacts_current and bool(candidate_skill_loaders)
+    portable_skill_loaders_rebuilt = (
+        artifacts_current
+        and bool(candidate_portable_skill_loaders)
+        and set(candidate_portable_skill_loaders) == set(candidate_skill_loaders)
+    )
     candidate_settings_synced = settings_synced(vault)
     candidate_system_clean = system_is_clean(system)
-    adapters_rebuilt = candidate_entries != baseline_entries and verify_adapters(vault)
+    adapters_rebuilt = artifacts_current and verify_adapters(vault)
     upgrade = {
         "passed": (
             personal_after_upgrade == personal_before
