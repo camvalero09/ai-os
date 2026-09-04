@@ -226,4 +226,4 @@ The release owner approves separately:
 
 ### Exact next action
 
-T06 is complete. T07 now requires the release owner to explicitly approve or decline installing commit `b465812` as a live-vault canary. Do not merge, tag, push, publish, or release as part of the canary decision; those remain a later, separate approval gate.
+T06 is complete. T07 now requires the release owner to explicitly approve or decline installing the current clean `improve/conversation-harness` branch HEAD, whose latest behavioral checkpoint is `b465812`, as a live-vault canary. Record the exact commit at approval time. Do not merge, tag, push, publish, or release as part of the canary decision; those remain a later, separate approval gate.
