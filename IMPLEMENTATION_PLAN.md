@@ -103,7 +103,7 @@ Target after Release B is stable: `v2.31`.
 | T04 | A | Repair generated skill descriptions | Complete | Trigger-first descriptions fit the 60-character index window; descriptions are valid YAML/JSON scalars; missing triggers fail generation; 17 loaders per host are identical and reproducible | This T04 checkpoint |
 | T05 | A | Remove structural contradictions | Complete | Reserved template names removed; authoring-only records no longer install as orphan notes; duplicated shipped style defaults, duplicated Effort-log claims, stale statements, duplicate dates, and contradictory push permission resolved; existing personal cards are never overwritten | `8b99ef7`, `72bffa1`, `0a3f6c3`, plus this T05.4 checkpoint |
 | T06 | A | Run clean-install and `v2.28` upgrade simulations | Complete | Exact candidate `b465812` clean-installs; synthetic personal data and credential permissions survive `v2.28` upgrade; root adapters, both host skill-loader trees, and settings rebuild; rollback restores `v2.28` and baseline-generated state; installed System stays clean | `3f2b3dd`, `c246760`, `b465812`, plus this evidence checkpoint |
-| T07 | A | Canary and release decision | In progress | Two approved canaries failed closed and restored `v2.28`; both live-state lint discovery paths are now fixed test-first; a new exact candidate requires separate approval; no agent self-publishes | `6d494ef`, `a8dc5e1`, plus pending evidence checkpoint |
+| T07 | A | Canary and release decision | Canary installed | Exact candidate `eeac083` is installed in the live vault; lint passes 14/14 and acceptance passes 18/18; protected personal inputs and the active worktree are unchanged; fresh-session behavior and release approval remain separate | `6d494ef`, `a8dc5e1`, `eeac083`, plus this evidence checkpoint |
 | T10 | B | Specify and test the session bootstrap contract | Not started | Bounded output; relevant current context; no full-note dumping or secrets | |
 | T11 | B | Implement session bootstrap and hook | Not started | Fresh VS Code session receives the brief once and can route correctly | |
 | T12 | B | Add controlled learning workflow | Not started | Durable facts route to one canonical home; temporary details are dropped | |
@@ -205,6 +205,7 @@ The release owner approves separately:
 - 2026-09-04: the first T07 live-state correction observed red in `tests/test_runtime_worktrees_excluded.py` and excluded the explicit host-managed roots `.claude/worktrees/` and `.agents/worktrees/` from Markdown note enumeration while continuing to lint live host skill-loader trees. The release owner separately approved corrected candidate `b143f79`.
 - 2026-09-04: the `b143f79` canary also failed closed and restored detached `v2.28`. Note enumeration was correct at 230 notes, but the separate stray-instruction-file scan still traversed the active worktree and reported its generated root `CLAUDE.md` and `AGENTS.md`. No worktree content was modified or removed.
 - 2026-09-04: a second red-green cycle expanded the same explicit worktree predicate to every relevant lint discovery path. The focused test now proves both duplicated notes and nested instruction files under `.claude/worktrees/` and `.agents/worktrees/` are excluded. The full 33-test suite and exact release simulation pass at `a8dc5e1`. A new exact-candidate approval is required before a third canary attempt.
+- 2026-09-04: the release owner approved exact candidate `eeac083`. The third canary passed: the live System checkout is detached at the approved commit and clean; settings are byte-identical to the candidate; vault lint passed all 14 checks across 230 live notes; acceptance passed 18/18; both host loader trees and root adapters rebuilt; and protected non-generated personal inputs were unchanged. The active Claude-managed worktree remained registered and untouched. The generated Active Context table retains its expected same-day stale-age refresh.
 
 ## Handover
 
@@ -226,8 +227,8 @@ The release owner approves separately:
 ### Unverified
 
 - The spelling-edit case still does not inspect session claims or verify the file after editing; lightweight enforcement is assigned to later session/bootstrap and post-edit work rather than adding more prose to T03.
-- No live canary has passed, and no merge, tag, push, publication, or release has occurred. The failed first canary restored the live installed System to `v2.28`.
+- The live canary is mechanically installed and verified, but the representative fresh-session behavior check has not run. No merge, tag, push, publication, or release has occurred.
 
 ### Exact next action
 
-T06 is complete and T07 is in progress. Two canary attempts failed closed and restored `v2.28`; the second exposed a separate lint discovery path, now fixed at `a8dc5e1`. The release owner must explicitly approve or decline a third canary using the current clean `improve/conversation-harness` branch HEAD. Record the exact commit at approval time. Do not merge, tag, push, publish, or release as part of the canary decision; those remain a later, separate approval gate.
+Keep `eeac083` installed as the private canary and exercise it in a genuinely fresh agent session with a representative vague request before considering release. Merge, tag, push, publication, and release remain blocked on a separate explicit owner decision.
