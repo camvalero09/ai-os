@@ -500,6 +500,11 @@ def check_status_vocabulary(files):
         status = fm.get("status")
         if status and status not in ALLOWED_STATUSES:
             issues.append(f"  {f.relative_to(VAULT)}: '{status}'")
+        if fm.get("type") == "tracker":
+            issues.append(
+                f"  {f.relative_to(VAULT)}: type 'tracker' is not a note type; "
+                "a tracker is an effort, so use type: effort and add next:"
+            )
     return issues
 
 
@@ -1038,8 +1043,10 @@ def main():
          "Inside a table, the bar in a link has to be written `\\|` instead of `|`. "
          "Otherwise the table swallows it and the link disappears.",
          check_table_pipes(files)),
-        ("A note has a status the vault does not recognise",
-         "Allowed values: " + ", ".join(sorted(ALLOWED_STATUSES)) + ".",
+        ("A note's status or type conflicts with the vault's vocabulary",
+         "Allowed status values: " + ", ".join(sorted(ALLOWED_STATUSES)) +
+         ". A running tracker uses type: effort and needs next:; 'tracker' describes "
+         "how the effort is used, not a separate note type.",
          check_status_vocabulary(files)),
         ("This vault's passwords are not being kept out of its backup",
          "Git history is permanent: a credential that reaches it is public for good, "

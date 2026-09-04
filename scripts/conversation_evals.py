@@ -23,6 +23,7 @@ REQUIRED_SCENARIO_TYPES = {
     "missing_capability",
     "cross_model_resume",
     "collision_detection",
+    "ambiguous_setup",
 }
 
 

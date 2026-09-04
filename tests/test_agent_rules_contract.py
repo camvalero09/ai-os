@@ -24,12 +24,17 @@ class AgentRulesContractTests(unittest.TestCase):
     def test_evidence_is_risk_based_without_weakening_source_inspection(self):
         text = card()
         self.assertIn("Inspect the relevant source before describing it", text)
+        self.assertIn("Reconcile claims against the sources already read", text)
+        self.assertIn("Do not write an inference as a fact or strengthen a claim past its source", text)
         self.assertIn("consequential, disputed, current, or externally published claims", text)
         self.assertIn("Scope negative claims to what was actually searched", text)
         self.assertNotIn("Quote it or say you cannot", text)
 
     def test_action_rules_use_risk_and_preserve_privacy_and_append_only_data(self):
         text = card()
+        self.assertIn("Use the smallest change that delivers the requested result", text)
+        self.assertIn("A recommendation or hypothesis is not an owner decision", text)
+        self.assertIn("Do not change priorities, strategy, decision criteria, or source-of-truth state", text)
         self.assertIn("Proceed without confirmation for local, in-scope actions", text)
         self.assertIn("external action, paid action, irreversible action", text)
         self.assertIn("personal identifier in an external search query", text)
