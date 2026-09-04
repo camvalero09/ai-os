@@ -60,6 +60,7 @@ class ReleaseSimulationTests(unittest.TestCase):
         self.assertTrue(report["upgrade"].get("credential_permissions_preserved", False))
         self.assertTrue(report["upgrade"]["adapters_rebuilt"])
         self.assertTrue(report["upgrade"].get("skill_loaders_rebuilt", False))
+        self.assertTrue(report["upgrade"].get("portable_skill_loaders_rebuilt", False))
         self.assertTrue(report["upgrade"].get("settings_synced", False))
         self.assertTrue(report["upgrade"].get("system_clean", False))
         self.assertTrue(report["rollback"]["passed"])
@@ -68,6 +69,7 @@ class ReleaseSimulationTests(unittest.TestCase):
         self.assertTrue(report["rollback"]["baseline_restored"])
         self.assertTrue(report["rollback"]["adapters_restored"])
         self.assertTrue(report["rollback"].get("skill_loaders_restored", False))
+        self.assertTrue(report["rollback"].get("portable_skill_loaders_restored", False))
         self.assertTrue(report["rollback"].get("settings_synced", False))
         self.assertTrue(report["rollback"].get("system_clean", False))
 

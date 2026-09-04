@@ -76,8 +76,8 @@ def generated_entries(vault: Path) -> dict[str, str]:
     }
 
 
-def generated_skill_loaders(vault: Path) -> dict[str, str]:
-    root = vault / ".claude/skills"
+def generated_skill_loaders(vault: Path, target: str = ".claude/skills") -> dict[str, str]:
+    root = vault / target
     return {
         str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in root.rglob("SKILL.md")
@@ -236,6 +236,7 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
     credential_mode_before = personal_paths[-1].stat().st_mode & 0o777
     baseline_entries = generated_entries(vault)
     baseline_skill_loaders = generated_skill_loaders(vault)
+    baseline_portable_skill_loaders = generated_skill_loaders(vault, ".agents/skills")
 
     if run(["git", "status", "--porcelain"], cwd=system):
         raise SimulationError("installed System checkout was dirty before upgrade")
@@ -245,8 +246,10 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
     personal_after_upgrade = fingerprint(personal_paths)
     candidate_entries = generated_entries(vault)
     candidate_skill_loaders = generated_skill_loaders(vault)
+    candidate_portable_skill_loaders = generated_skill_loaders(vault, ".agents/skills")
     credential_permissions_after_upgrade = (personal_paths[-1].stat().st_mode & 0o777) == credential_mode_before
     skill_loaders_rebuilt = candidate_skill_loaders != baseline_skill_loaders
+    portable_skill_loaders_rebuilt = candidate_portable_skill_loaders != baseline_portable_skill_loaders
     candidate_settings_synced = settings_synced(vault)
     candidate_system_clean = system_is_clean(system)
     adapters_rebuilt = candidate_entries != baseline_entries and verify_adapters(vault)
@@ -256,6 +259,7 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
             and credential_permissions_after_upgrade
             and adapters_rebuilt
             and skill_loaders_rebuilt
+            and portable_skill_loaders_rebuilt
             and candidate_settings_synced
             and candidate_system_clean
         ),
@@ -263,6 +267,7 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
         "credential_permissions_preserved": credential_permissions_after_upgrade,
         "adapters_rebuilt": adapters_rebuilt,
         "skill_loaders_rebuilt": skill_loaders_rebuilt,
+        "portable_skill_loaders_rebuilt": portable_skill_loaders_rebuilt,
         "settings_synced": candidate_settings_synced,
         "system_clean": candidate_system_clean,
         "candidate_commit": candidate_sha,
@@ -274,9 +279,11 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
     personal_after_rollback = fingerprint(personal_paths)
     restored_entries = generated_entries(vault)
     restored_skill_loaders = generated_skill_loaders(vault)
+    restored_portable_skill_loaders = generated_skill_loaders(vault, ".agents/skills")
     credential_permissions_after_rollback = (personal_paths[-1].stat().st_mode & 0o777) == credential_mode_before
     baseline_restored = run(["git", "describe", "--tags", "--exact-match"], cwd=system) == baseline
     skill_loaders_restored = restored_skill_loaders == baseline_skill_loaders
+    portable_skill_loaders_restored = restored_portable_skill_loaders == baseline_portable_skill_loaders
     baseline_settings_synced = settings_synced(vault)
     baseline_system_clean = system_is_clean(system)
     rollback = {
@@ -286,6 +293,7 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
             and baseline_restored
             and restored_entries == baseline_entries
             and skill_loaders_restored
+            and portable_skill_loaders_restored
             and baseline_settings_synced
             and baseline_system_clean
         ),
@@ -294,6 +302,7 @@ def simulate(repo: Path, baseline: str, candidate: str, workspace: Path) -> dict
         "baseline_restored": baseline_restored,
         "adapters_restored": restored_entries == baseline_entries,
         "skill_loaders_restored": skill_loaders_restored,
+        "portable_skill_loaders_restored": portable_skill_loaders_restored,
         "settings_synced": baseline_settings_synced,
         "system_clean": baseline_system_clean,
     }
