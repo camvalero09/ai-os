@@ -10,6 +10,38 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.29 (2026-09-05)
+
+The theme is restraint. An agent asked to "set up customer conversations" built five files of strategy, decided the criteria for judging the results, and rewrote the top priority — none of which had been asked for. This version is mostly about stopping that, and about giving your agent less to read before it starts.
+
+**Fixed**
+
+- **Your agent no longer makes your decisions and writes them down as settled.** It now uses the smallest change that does what you asked, and it treats its own recommendations as recommendations. Priorities, strategy, decision criteria and anything the vault records as true are yours: it can propose a change to them, but it has to ask before recording one. The rule it broke had never been written down, because it had never occurred to anyone that it needed to be.
+
+- **It reconciles what it writes against what it read.** The same session wrote a call script telling the reader that payment worked, while the project's own technical handover said payments were deliberately switched off and untested. Both files were open in the same session. Your agent now has to square a claim against the sources it has already read, must not write an inference as though it were a fact or make a claim stronger than its source, and when two sources disagree it has to say so rather than quietly using the one that suits what it wants to do.
+
+- **A note that says `type: tracker` is now rejected.** There is no such kind of note. A tracker is an effort, and calling it something else let that session's note skip every check that applies to efforts, including the one requiring a next action. The vault check passed it anyway. It now says so and tells you to use `type: effort` with a `next:` line.
+
+**Changed**
+
+- **Your agent reads about 25% less before it starts work.** The always-loaded rules used to carry exact commands: how to shape a git commit, which script to run to see who else is working. Those are now in skills that load when they are needed. What stays is the judgement: checkpoint your work, stage only your own files, never push unless asked. Roughly 760 words left the startup path.
+
+- **The skill files in `.claude/skills/` and `.agents/skills/` are one line instead of four.** Each one existed to say "read this note." It now says that once. The sentences telling your agent not to proceed before reading, and reminding it which file wins a conflict, were repeated in all twenty and are gone from nineteen of them.
+
+- **Two rules were removed for arguing with things nobody does any more.** One spent forty words explaining when *not* to label a reply `Done` or `Blocked`, left over from an older rule that required the labels; that rule was deleted two versions ago. The other told your agent how to write skill descriptions, which matters only when writing a skill, and now lives in the skill about writing skills.
+
+**Added**
+
+- **A "Saving Work" skill** holding the git commands that left the rules: how to commit only your own files, why a commit can't see a file git has never heard of, and what to do when a checkpoint fails. It loads when your agent is saving work.
+
+- **The vault check ignores agent worktrees.** If your agent works in a scratch copy under `.claude/worktrees/`, the check used to read those copies as if they were your notes and fail. Found twice while installing this version, both times by the check refusing to install and rolling itself back, which is the behaviour you want.
+
+**Not fixed**
+
+- **Your agent still does not reliably look at the working tree or check for other live sessions before it starts.** Both test sessions skipped it. Asking more firmly in the rules has not worked twice now, so the next version does it with a hook instead of a sentence.
+
+---
+
 ## v2.28 (2026-09-02)
 
 **Fixed**
