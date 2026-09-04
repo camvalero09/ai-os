@@ -3,7 +3,7 @@ id: update-system
 type: tool
 status: active
 domain: ai_os
-updated: 2026-08-04
+updated: 2026-09-04
 summary: "Update the shared system to a newer version, or roll back, without touching git."
 triggers: "update the system, check for updates, new version, am I up to date, roll back, undo the update, what changed"
 expose: true
@@ -103,6 +103,14 @@ git push origin main && git push origin v1.4   # 4. push both
 ```
 
 Add an entry to `CHANGELOG.md` in the same commit, written for someone who does not code. It is what every adopter's agent reads before asking permission to update.
+
+Before any tag, push, or live-vault canary, run the repeatable disposable release gate from the authoring repository:
+
+```bash
+python3 scripts/release_simulation.py --baseline v2.28 --candidate HEAD
+```
+
+It creates isolated local vaults, proves a clean candidate installation, updates a synthetic personal vault from the baseline to the candidate, and rolls it back. Personal files and a synthetic credential fixture must survive byte-for-byte; generated adapters must change on upgrade and return to their baseline state on rollback. A failure blocks the release. The temporary vaults are removed automatically. Subprocesses receive a minimal environment with no caller credentials or Git configuration, `VAULT_ROOT` is pinned to each disposable checkout, and Git is restricted to the local file protocol; the gate never fetches or contacts a configured remote.
 
 Then update your own vault the normal way, above. Running the new version yourself before anyone else does is the point of being an installation rather than a special case.
 
