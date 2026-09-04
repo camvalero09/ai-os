@@ -56,9 +56,9 @@ class AgentRulesContractTests(unittest.TestCase):
 
     def test_checkpoints_handle_new_files_and_shared_index_races(self):
         text = card()
-        self.assertIn("New files must be added by their exact paths", text)
-        self.assertIn("git commit -o -F <message file> -- <paths>", text)
-        self.assertIn("unrelated files staged by another session are excluded", text)
+        self.assertIn("Stage only explicit new paths changed for that unit", text)
+        self.assertIn("never stage the whole vault", text)
+        self.assertIn("exclude files another session left staged", text)
         self.assertIn("If a checkpoint fails, preserve the changes", text)
         self.assertIn("Push only when explicitly asked", text)
         self.assertNotIn("git add -A", text)

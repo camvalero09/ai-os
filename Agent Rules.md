@@ -63,7 +63,7 @@ After three failed attempts at the same approach, stop repeating it. Preserve th
 
 Create a Git checkpoint after a completed substantive unit, before switching to different work, before a long or risky operation, when the owner requests one, or at session handover. A unit is one change describable without joining unrelated work.
 
-Stage only explicit new paths changed for that unit; never stage the whole vault. Inspect the relevant diff immediately before committing. Commit with `git commit -o -F <message file> -- <paths>` so unrelated files staged by another session are excluded. New files must be added by their exact paths first because `git commit -o` cannot discover an untracked file. If a checkpoint fails, preserve the changes and record the failure and exact recovery command instead of claiming completion.
+Stage only explicit new paths changed for that unit; never stage the whole vault. Inspect the relevant diff immediately before committing, and exclude files another session left staged. If a checkpoint fails, preserve the changes and record the failure and the exact recovery command instead of claiming completion. The commands are in the Saving Work skill.
 
 Include the agent name, model, and available session identifier in the commit message. Push only when explicitly asked.
 
@@ -77,7 +77,7 @@ Skill descriptions use third person, state what the skill does and when it appli
 
 ## Coordination before editing
 
-Before editing, inspect the working tree and run `python3 System/scripts/sessions.py` when the command is available. Leave files claimed by another live session alone.
+Before editing, inspect the working tree and check who else is live in this vault, using the Sessions skill when it is available. Leave files claimed by another live session alone.
 
 A missing heartbeat is not proof that the vault is clear. If a changed file is unclaimed, inspect its diff and provenance. Proceed only when the existing change can be preserved and the requested work is reversible and non-overlapping; otherwise ask before editing it.
 
