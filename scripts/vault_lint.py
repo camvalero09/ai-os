@@ -87,13 +87,17 @@ def get_all_md_files():
     report install-time scaffolding as orphaned notes. Excludes
     AUTHORING_ONLY_RECORDS for the same reason: they describe the authoring
     repository, not the vault, and an installed checkout has nowhere for a
-    vault note to link them from.
+    vault note to link them from. Host-managed worktrees are complete working
+    copies, not live vault content; counting them duplicates notes and loads
+    nested instruction files.
     """
     seed = SYSTEM / "template"
     authoring_only = {SYSTEM / name for name in AUTHORING_ONLY_RECORDS}
+    runtime_worktrees = {VAULT / ".claude/worktrees", VAULT / ".agents/worktrees"}
     return [f for f in VAULT.rglob("*.md")
             if not IGNORED_DIR_NAMES.intersection(f.parts)
             and seed not in f.parents
+            and not runtime_worktrees.intersection(f.parents)
             and f not in authoring_only]
 
 
