@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RULES = ROOT / "Agent Rules.md"
+CREATE_SKILL = ROOT / "Skills" / "Tools" / "Create Vault Skill Note.md"
 
 
 def card() -> str:
@@ -81,7 +82,9 @@ class AgentRulesContractTests(unittest.TestCase):
         self.assertIn("Rules state what to do. Procedures belong in skills", text)
         self.assertIn("Add only context an agent could not reliably derive", text)
         self.assertIn("Use full vault-relative wikilinks", text)
-        self.assertIn("Skill descriptions use third person", text)
+        self.assertNotIn("Skill descriptions use third person", text)
+        skill_text = CREATE_SKILL.read_text(encoding="utf-8")
+        self.assertIn("Write them in third person", skill_text)
 
 
 if __name__ == "__main__":

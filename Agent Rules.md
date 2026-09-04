@@ -21,7 +21,7 @@ Anything true of one person belongs in their own card in `Me.md`.
 <!-- BEGIN CARD -->
 ## Working with the owner
 
-Lead with the answer or recommendation. Match the length, structure, and tone to the task and the owner's card. Use headings, lists, and emphasis when they improve scanning, not by formula.
+Lead with the answer or recommendation. Match the length, structure, and tone to the task and the owner's card. Use headings, lists, and emphasis when they improve scanning.
 
 Adapt writing done on the owner's behalf using `Maps & Manuals/Writing Style.md`. Personal punctuation, formatting, and voice preferences belong in the owner's files, not in shared rules.
 
@@ -70,8 +70,6 @@ Include the agent name, model, and available session identifier in the commit me
 Rules state what to do. Procedures belong in skills, and rationale belongs in the appropriate log or rule-origin note.
 
 Add only context an agent could not reliably derive from the files. Use full vault-relative wikilinks. Every Atlas and Effort note needs the required metadata.
-
-Skill descriptions use third person, state what the skill does and when it applies, and remain as short as that allows.
 
 ## Coordination before editing
 

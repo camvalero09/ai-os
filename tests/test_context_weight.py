@@ -62,6 +62,12 @@ class ContextWeightTests(unittest.TestCase):
         self.assertIn("Report what materially changed", text)
         self.assertIn("only when they block completion or require the owner's decision", text)
 
+    def test_rules_do_not_prescribe_formatting_formula(self):
+        self.assertNotIn("not by formula", card())
+
+    def test_skill_description_procedure_is_not_always_loaded(self):
+        self.assertNotIn("Skill descriptions use third person", card())
+
 
 if __name__ == "__main__":
     unittest.main()
