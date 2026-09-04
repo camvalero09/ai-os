@@ -10,6 +10,20 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 ---
 
+## v2.30 (2026-09-05)
+
+**Fixed**
+
+- **The session list your agent sees at startup is 57 words instead of 477.** Every session opens by printing who else is working in the vault. It was printing every heartbeat of the last fortnight — thirty rows, of which eighteen were sessions that started, did nothing and ended. The line that actually matters, whether anything is sitting unsaved, came last, after a screen of dead rows. Two test sessions were given this and coordinated with nobody, which looked like them ignoring the rule and was closer to the rule being unreadable. Ended sessions are now a count. Live ones get the table.
+
+- **The `Model` column is gone.** It has said `unknown` for every session ever recorded, because the agent name arrives through the hook and the model does not. A column of `unknown` is worse than no column: it looks like information.
+
+**Added**
+
+- **`sessions.py --all`** prints the old full history, every heartbeat with its last commit. Nothing was lost, it just stopped being what a session opens with.
+
+---
+
 ## v2.29 (2026-09-05)
 
 The theme is restraint. An agent asked to "set up customer conversations" built five files of strategy, decided the criteria for judging the results, and rewrote the top priority — none of which had been asked for. This version is mostly about stopping that, and about giving your agent less to read before it starts.

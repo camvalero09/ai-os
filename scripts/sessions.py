@@ -10,7 +10,8 @@ Each session leaves a heartbeat: a small file it rewrites as it works. A session
 is over when its pulse stops, which is the only ending that survives a closed
 tab, a slept laptop or a crash. Nothing ever writes "closed".
 
-    python3 System/scripts/sessions.py            # the table
+    python3 System/scripts/sessions.py            # who is live, and unsaved work
+    python3 System/scripts/sessions.py --all      # every heartbeat, full history
     python3 System/scripts/sessions.py --start    # open a heartbeat, then table
     python3 System/scripts/sessions.py --beat     # refresh the pulse, silent
     python3 System/scripts/sessions.py --handover # mark the handover as done
@@ -38,6 +39,7 @@ ACTIVE_MINUTES = 10      # a pulse this fresh means someone is working now
 ENDED_HOURS = 6          # no pulse this long means the session is over
 STDIN_WAIT = 0.5         # seconds to wait for hook JSON before giving up on it
 UNIDENTIFIED_MINUTES = 10  # a file touched this recently with no owner
+PRUNE_DAYS = 14          # heartbeats older than this are deleted
 
 EFFORT_RE = re.compile(r"Efforts/([^/]+)/")
 
@@ -293,8 +295,56 @@ def fmt(t) -> str:
 
 
 def print_table(beats: list) -> None:
+    """What an agent needs before it edits: who else is here, and on what.
+
+    A hook prints this into every session, so it competes with the request
+    itself for attention. Ended sessions are a count, not rows: the vault
+    accumulates dozens that started, did nothing and ended, and burying two
+    live sessions under thirty dead ones is how coordination gets skipped.
+    Run `python3 System/scripts/sessions.py --all` for the full history.
+    """
+    live = [b for b in beats if b.get("state") in ("ACTIVE", "idle")]
+    ended = len(beats) - len(live)
+
+    if not beats:
+        print("No heartbeats. Either nothing is running, or an agent that does")
+        print("not write one is. This is not proof the vault is free.\n")
+        return
+
+    tail = ", %d ended (%dd)" % (ended, PRUNE_DAYS) if ended else ""
+    print("SESSIONS: %d live%s\n" % (len(live), tail))
+
+    if not live:
+        print("Nobody else is live. Files changed recently still need a look.\n")
+        return
+
     commits = commits_by_session()
-    hdr = ("Session", "Agent", "Model", "Started", "Last beat", "State",
+    hdr = ("Session", "Agent", "Started", "State", "Working on", "Saved")
+    rows = [hdr]
+    for b in live:
+        mine = commits.get(b.get("id", ""), [])
+        rows.append((
+            b.get("id", "?"),
+            b.get("agent", "?")[:12],
+            fmt(b.get("started")),
+            b.get("state", "?"),
+            ", ".join(b.get("efforts", []))[:26] or "-",
+            "Y" if mine else "N",
+        ))
+    w = [max(len(str(r[i])) for r in rows) for i in range(len(hdr))]
+    for i, r in enumerate(rows):
+        print("  ".join(str(r[j]).ljust(w[j]) for j in range(len(hdr))).rstrip())
+        if i == 0:
+            print("  ".join("-" * w[j] for j in range(len(hdr))))
+    print()
+    print("ACTIVE = pulse under %d min. idle = still open, stepped away."
+          % ACTIVE_MINUTES)
+
+
+def print_table_full(beats: list) -> None:
+    """Every heartbeat, for --all. Not what a session opens with."""
+    commits = commits_by_session()
+    hdr = ("Session", "Agent", "Started", "Last beat", "State",
            "Working on", "Saved", "Last commit", "What")
     rows = [hdr]
     for b in beats:
@@ -303,7 +353,6 @@ def print_table(beats: list) -> None:
         rows.append((
             b.get("id", "?"),
             b.get("agent", "?")[:12],
-            str(b.get("model", "?")).replace("claude-", "")[:8],
             fmt(b.get("started")),
             fmt(b.get("last_beat")),
             b.get("state", "?"),
@@ -397,7 +446,7 @@ def print_unfinished(beats: list) -> None:
                      ", ".join(b.get("efforts", [])) or "unknown"))
 
 
-def prune(beats: list, days: int = 14) -> None:
+def prune(beats: list, days: int = PRUNE_DAYS) -> None:
     cutoff = time.time() - days * 86400
     for b in beats:
         if b.get("last_beat", 0) < cutoff:
@@ -435,9 +484,13 @@ def main() -> int:
 
     beats = load_beats()
     prune(beats)
-    print("SESSIONS IN THIS VAULT\n")
-    print_table([b for b in beats if b["file"].exists()])
-    print_unfinished([b for b in beats if b["file"].exists()])
+    alive = [b for b in beats if b["file"].exists()]
+    if "--all" in args:
+        print("SESSIONS IN THIS VAULT\n")
+        print_table_full(alive)
+    else:
+        print_table(alive)
+    print_unfinished(alive)
     return 0
 
 
