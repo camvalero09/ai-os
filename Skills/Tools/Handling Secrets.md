@@ -13,7 +13,7 @@ expose: true
 
 ## Creating one
 
-Write a placeholder file with paste instructions. Tell Camilo to open it in the IDE and replace the content there. **Never ask him to paste a secret into chat.**
+Write a placeholder file with paste instructions. Tell the owner to open it in the IDE and replace the content there. **Never ask them to paste a secret into chat.**
 
 Secrets live in `credentials/`, never inside `System/`. Add any new secret type to `.gitignore` before use. The root `.gitignore` already covers `credentials.json`, `*.json.key` and `.env`.
 
@@ -29,6 +29,6 @@ Rotating a secret does not remove it from transcripts written before the rotatio
 
 ## Pruning
 
-Old transcripts hold every file any session read. Move finished months to the Trash, and tell Camilo that emptying the Trash is the step that actually removes them.
+Old transcripts hold every file any session read. Move finished months to the Trash, and tell the owner that emptying the Trash is the step that actually removes them.
 
 Found 2026-08-07: three July transcripts held a Google service-account private key in full, while `.gitignore` had kept that same file out of git perfectly since the day it was created.

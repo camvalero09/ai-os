@@ -44,7 +44,7 @@ A fact earns a place in the vault only if it changes what a future session would
 
 Two cases deserve an explicit **record nothing**:
 
-- **Borrowed space.** The vault was a workbench for something that is not Camilo's ongoing work: a favour, a one-off document, a scratch experiment. Deliver the output, skip the bookkeeping.
+- **Borrowed space.** The vault was a workbench for something that is not the owner's ongoing work: a favour, a one-off document, a scratch experiment. Deliver the output, skip the bookkeeping.
 - **Tooling that documents itself.** A new script command belongs in its tool note and the commit message, not in an effort note or the Agent Log.
 
 When in doubt, one precise line in the right note beats a paragraph in a new one.
@@ -55,7 +55,7 @@ When in doubt, one precise line in the right note beats a paragraph in a new one
 
 Separate four states explicitly: what **happened** (with evidence), what was **decided** (by whom), what is **pending** (owner plus deadline), what is **blocked** (on what, until when). Blurring pending and blocked makes the next agent re-analyse instead of act.
 
-Record **verification status**, not just conclusions. "Proven from the source document" and "Camilo recalls, unverified" get different markers. Unverified claims that reach external documents are how sessions ship errors.
+Record **verification status**, not just conclusions. "Proven from the source document" and "the owner recalls, unverified" get different markers. Unverified claims that reach external documents are how sessions ship errors.
 
 ---
 
@@ -72,7 +72,7 @@ Record **verification status**, not just conclusions. "Proven from the source do
 5. **`next:` is a concrete dated action** ("file SFC queja 2026-08-12 15:00 Berlin"), never "continue the work".
 6. **Deadlines get externalised**, as a calendar event via [[System/Skills/Tools/Personal Google|Personal Google]] for time-critical ones and an explicit date in `next:` otherwise. A deadline buried in prose is a missed deadline.
 7. **The Agent Log has two sections and the keep test applies differently to each.** Section 1 takes changes to how the vault itself works, never a record of tasks completed. Section 2 takes this session's mistakes, in the format `YYYY-MM-DD | what went wrong | fix applied or rule to add`, and is the one place in the vault that deliberately holds uncertain material: an entry there is a candidate for a rule, not a rule, and it survives only until [[System/Skills/Workflows/Weekly Maintenance|Weekly Maintenance]] promotes or discards it. Log a mistake if it cost real time, sent the session down a wrong path, or would have been avoided by a rule that does not exist yet. Not typos, not one-off tool errors. An empty session is fine, but say so rather than skipping silently.
-8. **Outside View has its own rules; read its header before writing there the first time.** Insert directly under the marker and do not read the entries below it: independent reads are the entire point, and an agent that reads last month's entry writes an agreement with it. Observations only, never advice, one or two at most. "Nothing new this session" is valid and is the most common entry. Nothing recorded there may be quoted back to Camilo in session or used to decide anything.
+8. **Outside View has its own rules; read its header before writing there the first time.** Insert directly under the marker and do not read the entries below it: independent reads are the entire point, and an agent that reads last month's entry writes an agreement with it. Observations only, never advice, one or two at most. "Nothing new this session" is valid and is the most common entry. Nothing recorded there may be quoted back to the owner in session or used to decide anything.
 9. **Commit explicit paths.** Never `git add -A` or a directory you did not touch. The script prints the command with `-o`, which commits only the named paths and ignores whatever else is sitting in a shared index. If `git status` shows changes you did not make, another session is probably live: leave them and name them in the wrap-up.
 
 ## Pitfalls seen in practice

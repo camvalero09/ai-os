@@ -7,7 +7,7 @@
 # SHA and the subject of commits it never made.
 #
 # Only agent commits are checked. A commit with no `Agent:` line was written by
-# Camilo by hand and passes untouched: this hook exists to hold agents to a
+# the owner by hand and passes untouched: this hook exists to hold agents to a
 # rule, not to get in his way.
 #
 # Installed via: python3 System/scripts/install_hook.py

@@ -61,7 +61,7 @@ def _find_vault_root() -> pathlib.Path:
 VAULT = _find_vault_root()
 # A vault has two skill trees and both are exposed the same way: System/Skills
 # ships with the shared system, Skills/ at the vault root holds this person's
-# private ones. Scanning only the first hides BigQuery and the Delivery Hero
+# private ones. Scanning only the first hides personal skills and employer-specific
 # workflows, which is how the first run of this reported 38 skills for a
 # catalogue of 49.
 SKILL_ROOTS = list(dict.fromkeys([SYSTEM / "Skills", VAULT / "Skills"]))
@@ -404,7 +404,7 @@ def main() -> int:
             print(f"{agent:<8}{name:<9}{len(b):>9}{y:>9}{100*y/len(b):>6.0f}%")
     print()
     print("A low rate in short sessions is the finding to watch: it means what")
-    print("Camilo is currently working on is skipped exactly where a quick")
+    print("the owner is currently working on is skipped exactly where a quick")
     print("unconsidered action is most likely.")
     return 0
 

@@ -120,6 +120,52 @@ def derived_terms(vault: Path) -> list[tuple[str, str]]:
     return sorted(set(terms), key=lambda t: -len(t[0]))
 
 
+SHIPPED_DIRS = ("Skills", "scripts", "template")
+AUTHORING_ONLY = {
+    "CHANGELOG.md", "IMPLEMENTATION_PLAN.md", "MAINTAINER_RULES.md",
+    "T03_RULES_PROPOSAL.md", "AGENTS.md", "CLAUDE.md", "README.md",
+    "SETUP.md", "SETUP-WINDOWS.md",
+}
+SHIPPED_SUFFIXES = {".md", ".py", ".json", ".sh", ""}
+
+
+def shipped_files() -> list[Path]:
+    """Every file an adopter receives, and none that only a maintainer reads.
+
+    SETUP guides and the README are excluded because they legitimately carry
+    the repository URL and its owner's account name; tests and evaluation
+    fixtures never reach a vault.
+    """
+    root = SHARED_RULES.parent
+    files = [SHARED_RULES] if SHARED_RULES.exists() else []
+    for name in SHIPPED_DIRS:
+        base = root / name
+        if not base.is_dir():
+            continue
+        for path in sorted(base.rglob("*")):
+            if not path.is_file() or "__pycache__" in path.parts:
+                continue
+            if path.suffix not in SHIPPED_SUFFIXES:
+                continue
+            if path.name in AUTHORING_ONLY:
+                continue
+            files.append(path)
+    return files
+
+
+def check_all() -> list[tuple[Path, str]]:
+    """Personal detail in anything that ships, as (file, problem) pairs."""
+    found = []
+    for path in shipped_files():
+        for problem in check(path):
+            found.append((path, problem))
+    return found
+
+
+PLACEHOLDER = re.compile(
+    r"example[.-]|@example|\byour[-.]|\bplaceholder\b|1234567890|\bxxx+\b", re.I)
+
+
 def check(path: Path = SHARED_RULES) -> list[str]:
     """Every reason this file must not be published, one per line."""
     if not path.exists():
@@ -135,7 +181,7 @@ def check(path: Path = SHARED_RULES) -> list[str]:
     for pattern, label in UNIVERSAL:
         for m in pattern.finditer(body):
             hit = m.group(0)
-            if hit.lower() in seen:
+            if hit.lower() in seen or PLACEHOLDER.search(hit):
                 continue
             seen.add(hit.lower())
             problems.append(f'"{hit}" looks like {label}')
@@ -155,14 +201,16 @@ def main() -> int:
     if not SHARED_RULES.exists():
         print(f"No shared rules file at {SHARED_RULES}.")
         return 2
-    problems = check()
+    problems = check_all()
+    scanned = len(shipped_files())
     if not problems:
-        print(f"{SHARED_RULES.name}: clean, nothing personal in the shared card.")
+        print(f"Shared files: clean, nothing personal in {scanned} files that ship.")
         return 0
-    print(f"{SHARED_RULES.name} contains personal detail and must not be published:\n")
-    for p in problems:
-        print(f"  {p}")
-    print("\nEvery installation loads this file and a published version cannot be")
+    root = SHARED_RULES.parent
+    print("Files that ship to every installation contain personal detail:\n")
+    for path, problem in problems:
+        print(f"  {path.relative_to(root)}: {problem}")
+    print("\nEvery installation loads these and a published version cannot be")
     print("amended. Move the detail into the owner's own card in Maps & Manuals/Me.md.")
     return 1
 

@@ -24,6 +24,10 @@ Versions are git tags. To see which one you have: `git -C System describe --tags
 
 **Also**
 
+- **Your name is out of the files everyone receives.** Seven shipped skills and scripts referred to the system's author by first name, including a workflow line reading "push only when Camilo has asked for it" that every adopter's agent loads at handover. They now say "the owner". Nothing about how the system behaves changes; it just stops telling your sister's agent about you.
+
+- **The impersonality check now reads every file that ships, not one.** It inspected `Agent Rules.md` alone and reported "clean" on each of the seven files above. It now scans all 85 files an adopter receives and names the file and the line. Placeholders such as `example.com` are recognised as examples rather than reported as leaks.
+
 - **The release gate no longer fails a version that only changes a script.** It proved regeneration had happened by checking that the generated files came out *different* from the previous version's. That works when a release edits your rules, and is wrong when it edits a script: the correct outcome there is files that are byte-for-byte identical. This release was one, so the gate blocked it. It now asks the question that actually matters, whether anything is out of date, which is the same check that runs in your vault.
 
 ---

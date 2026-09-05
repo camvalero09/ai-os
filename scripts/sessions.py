@@ -3,7 +3,7 @@
 
 A vault is one folder on one disk, and several agents edit it at once. Engineers
 avoid this shape entirely by giving everyone their own branch; that trade was
-declined here because merging Markdown by hand lands on Camilo, not on the
+declined here because merging Markdown by hand lands on the owner, not on the
 agents. So the collision has to be reported instead of prevented.
 
 Each session leaves a heartbeat: a small file it rewrites as it works. A session
@@ -414,7 +414,7 @@ def print_unfinished(beats: list) -> None:
                 break
         age_h = (time.time() - mt) / 3600
         # Only effort files raise the alarm. System and config files change for
-        # a dozen reasons and would drown the signal Camilo actually needs,
+        # a dozen reasons and would drown the signal the owner actually needs,
         # which is two agents in the same project at the same time.
         if (owner == "unclaimed" and effort
                 and age_h * 60 < UNIDENTIFIED_MINUTES):

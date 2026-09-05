@@ -61,7 +61,7 @@ Create a subfolder only when there are multiple outputs of the same type. Otherw
 
 Do not output the content to chat. Read the relevant skill note first: it carries rules that prevent common errors.
 
-- Save to `Ideaverse/Outputs/` unless Camilo specifies a path, or to the effort's own `Outputs/` folder when it belongs to a project.
+- Save to `Ideaverse/Outputs/` unless the owner specifies a path, or to the effort's own `Outputs/` folder when it belongs to a project.
 - Name it `YYYY-MM-DD - [Title].[ext]`.
 - Give it a real `summary:` in the settings block. That field is what agents read to decide whether to open it.
 - Confirm the path afterwards with a one-line summary of what was produced.
@@ -74,5 +74,5 @@ Do not output the content to chat. Read the relevant skill note first: it carrie
 - Do not create files or folders that were not requested, or duplicate a note that exists.
 - Do not overwrite any file without first saying what will change.
 - Do not delete raw sources.
-- Reference a document or transaction by its exact file, date and identifier. Camilo keeps several versions of most things.
+- Reference a document or transaction by its exact file, date and identifier. Owners keep several versions of most things.
 - Updating rows in shared data: match every identifying field, never one. A receipt number can legitimately span several rows.
